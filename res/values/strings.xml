@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Origami</string>
+    <string name="index_start_btn_text">종이접기\n    시작</string>
+    <string name="index_collection_btn_text">콜렉션</string>
+    <string name="index_howto_btn_text">도\n움\n말</string>
+    <string name="main_single_btn_text">한개씩</string>
+    <string name="main_theme_btn_text">테마별</string>
+    <string name="main_boast_btn_text">뽑내기</string>
+    <string name="boast_board_btn_text">구경하기</string>
+    <string name="boast_upload_btn_text">내꺼 올리기</string>
+
+</resources>
