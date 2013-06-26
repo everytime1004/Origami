@@ -103,6 +103,7 @@ public class MainActivity extends Activity {
 
 			Intent startFoldingIntent = new Intent(getApplicationContext(),
 					PlayActivity.class);
+			startFoldingIntent.putExtra("level", selectedItem.getId());
 			startActivity(startFoldingIntent);
 
 		}

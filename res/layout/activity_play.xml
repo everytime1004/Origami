@@ -3,59 +3,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/play_bg"
+    android:background="#efefef"
+    android:gravity="bottom"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/play_item_level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="1"
-        android:textSize="20sp" />
-
-    <ImageView
-        android:id="@+id/play_item_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/btn_right" />
-
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal" >
+        android:background="@drawable/play_bg"
+        android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/play_left_button"
+        <TextView
+            android:id="@+id/play_item_level"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_gravity="center"
+            android:textSize="20sp" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/play_main_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3" >
+            android:gravity="center"
+            android:orientation="horizontal" >
 
-            <com.devsmart.android.ui.HorizontalListView
-                android:id="@+id/play_item_image_list_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:gravity="right|center"
+                android:layout_weight="2" >
+
+                <Button
+                    android:id="@+id/play_left_button"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/index_left_button"
+                    
+                    android:onClick="playButton" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_weight="10" >
+
+                <ImageSwitcher
+                    android:id="@+id/play_switcher"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/play_right_button_layout"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_weight="2" 
+                android:gravity="left|center">
+
+                <Button
+                    android:id="@+id/play_right_button"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/index_right_button"
+                    android:onClick="playButton" />
+            </LinearLayout>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/play_right_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+        <Gallery
+            android:id="@+id/play_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginLeft="100dp"
+            android:layout_marginRight="100dp"
+            android:background="@android:color/transparent"
+            android:spacing="4dp" />
     </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:background="@drawable/grass"
-        android:layout_gravity="bottom"/>
 
 </LinearLayout>
