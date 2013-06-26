@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_light"
+    android:background="@drawable/play_bg"
     android:orientation="vertical" >
 
     <TextView
@@ -24,8 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:weightSum="5" >
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/play_left_button"
@@ -36,8 +36,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-             >
+            android:layout_weight="3" >
 
             <com.devsmart.android.ui.HorizontalListView
                 android:id="@+id/play_item_image_list_view"
@@ -52,5 +51,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:background="@drawable/grass"
+        android:layout_gravity="bottom"/>
 
 </LinearLayout>
