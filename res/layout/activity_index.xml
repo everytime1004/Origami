@@ -70,15 +70,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:layout_marginLeft="10dp"
-                android:background="@drawable/btn_left_disable" />
+                android:background="@drawable/index_left_button"
+                android:onClick="indexFirstBtn" />
         </LinearLayout>
 
-        <fragment
-            android:id="@+id/index_start_button_fragment"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="12"
-            class="com.kmb.origami.view.IndexFirstActivity$FragmentOne" />
+            android:gravity="center" >
+
+            <ImageSwitcher
+                android:id="@+id/index_image_switcher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -101,7 +107,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_weight="0.05"
         android:background="@drawable/grass" />
 
 </LinearLayout>
