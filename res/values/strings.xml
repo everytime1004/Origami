@@ -10,5 +10,28 @@
     <string name="main_boast_btn_text">뽑내기</string>
     <string name="boast_board_btn_text">구경하기</string>
     <string name="boast_upload_btn_text">내꺼 올리기</string>
+    <string name="result_success_text">Success</string>
+    <string name="result_save_button_text">save</string>
+    <string name="result_share_button_text">share</string>
+    <string name="result_main_button_text">main</string>
+    <string name="moreTask">더보기</string>
+    <string name="postShowTitle">제목</string>
+    <string name="postShowComments">댓글</string>
+    <string name="postShowCommentsBtn">댓글 보기</string>
+    <string name="showCommentEditTextBtn">댓글 달기</string>
+    <string name="addCommentEditTextHint">댓글을 입력해주세요.</string>
+    <string name="addCommentSubmitBtnText">확인</string>
+    <string name="postShowAuthor">작성자</string>
+    <string name="postShowPassword">비밀번호</string>
+    <string name="create_task">글 쓰기</string>
+    <string name="search_task">검색</string>
+    <string name="delete_task">글 삭제</string>
+    <string name="save_task">저장</string>
+    <string name="searchEtHint">글 제목 또는 작성자</string>
+    <string name="addImageBtnText">사진 추가</string>
+    <string name="takePic">카메라</string>
+    <string name="openGallery">앨범</string>
+    <string name="cancel">취소</string>
+    <string name="remove">삭제</string>
 
 </resources>

@@ -63,18 +63,14 @@ public class MainActivity extends Activity {
 
 	public void mainViewBtn(View v) {
 
-		switch (v.getId()) {
-		case R.id.main_single_button:
+		int id = v.getId();
+		if (id == R.id.main_single_button) {
 			buildDialog("stage", "single");
-			break;
-
-		case R.id.main_theme_button:
+		} else if (id == R.id.main_theme_button) {
 			buildDialog("stage", "theme");
-			break;
-		case R.id.main_boast_button:
+		} else if (id == R.id.main_boast_button) {
 			Intent changeViewIntent = new Intent(this, BoastActivity.class);
 			startActivity(changeViewIntent);
-			break;
 		}
 	}
 
@@ -113,10 +109,10 @@ public class MainActivity extends Activity {
 			ImageView middleCloud, ImageView rightCloud) {
 		TranslateAnimation ta = new TranslateAnimation(-30, 0, 0, 0);
 		TranslateAnimation ta_rightCloud = new TranslateAnimation(0, 30, 0, 0);
-		ta.setDuration(5000);// 애니메이션의 동작 시간설정
+		ta.setDuration(3000);// 애니메이션의 동작 시간설정
 		ta.setRepeatMode(Animation.REVERSE);
 		ta.setRepeatCount(-1);// 무한반복을 뜻함
-		ta_rightCloud.setDuration(5000);// 애니메이션의 동작 시간설정
+		ta_rightCloud.setDuration(3000);// 애니메이션의 동작 시간설정
 		ta_rightCloud.setRepeatMode(Animation.REVERSE);
 		ta_rightCloud.setRepeatCount(-1);// 무한반복을 뜻함
 

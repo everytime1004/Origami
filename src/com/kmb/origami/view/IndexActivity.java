@@ -65,8 +65,8 @@ public class IndexActivity extends Activity implements ViewFactory {
 
 	public void indexFirstBtn(View v) {
 		Log.d("imageFlag", String.valueOf(imageFlag));
-		switch (v.getId()) {
-		case R.id.index_right_button:
+		int id = v.getId();
+		if (id == R.id.index_right_button) {
 			mSwitcher.setInAnimation(AnimationUtils.loadAnimation(this,
 					R.anim.slide_in_right));
 			mSwitcher.setOutAnimation(AnimationUtils.loadAnimation(this,
@@ -86,9 +86,7 @@ public class IndexActivity extends Activity implements ViewFactory {
 				break;
 
 			}
-			break;
-
-		case R.id.index_left_button:
+		} else if (id == R.id.index_left_button) {
 			mSwitcher.setInAnimation(AnimationUtils.loadAnimation(this,
 					R.anim.slide_in_left));
 			mSwitcher.setOutAnimation(AnimationUtils.loadAnimation(this,
@@ -107,8 +105,6 @@ public class IndexActivity extends Activity implements ViewFactory {
 				imageFlag--;
 				break;
 			}
-
-			break;
 		}
 	}
 

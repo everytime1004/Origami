@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/post_index_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="10" >
+
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+        android:id="@+id/post_index_list"
+        android:layout_width="fill_parent"
+        android:layout_height="400dp"
+        android:cacheColorHint="#00000000"
+        android:divider="#19000000"
+        android:dividerHeight="4dp"
+        android:fadingEdge="none"
+        android:fastScrollEnabled="false"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="false"
+        android:smoothScrollbar="true" 
+        android:layout_weight="9"/>
+
+    <Button
+        android:id="@+id/moreTaskBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:onClick="moreTaskListener"
+        android:text="@string/moreTask"
+        android:visibility="invisible"
+        android:layout_weight="1" />
+
+</LinearLayout>

@@ -1,8 +1,16 @@
 package com.kmb.origami.view;
 
+import java.io.FileNotFoundException;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -19,9 +27,12 @@ import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import com.kmb.origami.R;
+import com.kmb.origami.lib.ProgressWheel;
+import com.qualcomm.QCARSamples.CloudRecognition.CloudReco;
 
 @SuppressWarnings("deprecation")
 public class PlayActivity extends Activity implements OnItemSelectedListener,
@@ -37,8 +48,29 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 
 	private LinearLayout play_right_button_layout = null;
 	private LinearLayout.LayoutParams play_right_button_params = null;
+	private LinearLayout play_switcher_layout = null;
 
 	private Gallery play_gallery = null;
+
+	ProgressWheel pw_three;
+
+	private Handler spinHandler = new Handler() {
+		/**
+		 * This is the code that will increment the progress variable and so
+		 * spin the wheel
+		 */
+		@Override
+		public void handleMessage(Message msg) {
+			if (Integer.parseInt(pw_three.getText().toString()) != 0) {
+				pw_three.setText(String.valueOf(Integer.parseInt(pw_three
+						.getText().toString()) - 1));
+
+				spinHandler.sendEmptyMessageDelayed(0, 1000);
+			} else {
+				spinHandler.removeMessages(0);
+			}
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +87,7 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		play_right_button_layout = (LinearLayout) findViewById(R.id.play_right_button_layout);
 		play_right_button_params = (LinearLayout.LayoutParams) play_right_button
 				.getLayoutParams();
+		play_switcher_layout = (LinearLayout) findViewById(R.id.play_switcher_layout);
 
 		mSwitcher = (ImageSwitcher) findViewById(R.id.play_switcher);
 		mSwitcher.setFactory(this);
@@ -64,28 +97,101 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		play_gallery.setOnItemSelectedListener(this);
 		play_gallery.setOnItemClickListener(this);
 
+		pw_three = (ProgressWheel) findViewById(R.id.progressBarThree);
+		pw_three.setText("180");
+		pw_three.setSpinSpeed(6);
+		spinHandler.sendEmptyMessage(0);
+		pw_three.spin();
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+
+		spinHandler.removeMessages(0);
+		pw_three.stopSpinning();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RESULT_OK) {
+			Uri targetUri = data.getData();
+			Log.d("request Code", String.valueOf(requestCode));
+
+			Bitmap resultBitmap = null;
+			try {
+				resultBitmap = decodeUri(targetUri);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			Intent resultIntent = new Intent(getApplicationContext(),
+					ResultActivity.class);
+			Bundle extras = new Bundle();
+			extras.putParcelable("resultImage", resultBitmap);
+			resultIntent.putExtras(extras);
+			startActivity(resultIntent);
+
+		} else {
+			// imageId_arr[requestCode - 1] = 0;
+			play_left_button.setClickable(true);
+			Log.d("RESULT_CANCEL", "CANCEL");
+		}
+	}
+
+	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
+		BitmapFactory.Options o = new BitmapFactory.Options();
+		o.inJustDecodeBounds = true;
+		BitmapFactory.decodeStream(
+				getContentResolver().openInputStream(selectedImage), null, o);
+
+		final int REQUIRED_SIZE = 300;
+
+		int width_tmp = o.outWidth, height_tmp = o.outHeight;
+		int scale = 1;
+		while (!(width_tmp / 2 < REQUIRED_SIZE && height_tmp / 2 < REQUIRED_SIZE)) {
+			width_tmp /= 2;
+			height_tmp /= 2;
+			scale *= 2;
+		}
+
+		BitmapFactory.Options o2 = new BitmapFactory.Options();
+		o2.inSampleSize = scale;
+		return BitmapFactory.decodeStream(
+				getContentResolver().openInputStream(selectedImage), null, o2);
 	}
 
 	public void playButton(View v) {
 		Log.d("mCurrentPosition", String.valueOf(mCurrentPosition));
-		switch (v.getId()) {
-		case R.id.play_right_button:
-			play_gallery.performItemClick(v, mCurrentPosition + 1,
-					mCurrentPosition + 1);
-			play_gallery.setSelection(mCurrentPosition);
-			play_left_button.setClickable(true);
-			break;
-
-		case R.id.play_left_button:
+		int id = v.getId();
+		if (id == R.id.play_right_button) {
+			if (play_right_button.getTag().equals("ing")) {
+				play_gallery.performItemClick(v, mCurrentPosition + 1,
+						mCurrentPosition + 1);
+				play_gallery.setSelection(mCurrentPosition);
+				play_left_button.setClickable(true);
+			} else {
+				Toast.makeText(getApplicationContext(), "사진을 찍자",
+						Toast.LENGTH_LONG).show();
+//				Intent cameraIntent = new Intent(
+//						android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//				startActivityForResult(cameraIntent, 0);
+				Intent i = new Intent(this, CloudReco.class);
+				startActivity(i);
+			}
+		} else if (id == R.id.play_left_button) {
 			if (mCurrentPosition == 0) {
 				play_left_button.setClickable(false);
-				break;
 			}
-
 			play_gallery.performItemClick(v, mCurrentPosition - 1,
 					mCurrentPosition - 1);
 			play_gallery.setSelection(mCurrentPosition);
-			break;
 		}
 	}
 
@@ -103,17 +209,25 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		// mCurrentPosition = mSelectedPosition;
 		// mSwitcher.setImageResource(mImageIds[mCurrentPosition]);
 		// }
-		mSwitcher.setImageResource(mImageIds[mCurrentPosition]);
-		play_gallery.setSelection(mCurrentPosition);
+		// mSwitcher.setImageResource(mImageIds[mCurrentPosition]);
+		// play_gallery.setSelection(mCurrentPosition);
+		mSwitcher.setImageResource(mImageIds[position]);
 
 		if (position == 0) {
 			play_left_button.setBackgroundResource(R.drawable.btn_left_disable);
 			play_right_button
 					.setBackgroundResource(R.drawable.index_right_button);
 
+			play_switcher_layout.setLayoutParams(new LinearLayout.LayoutParams(
+					0, LayoutParams.MATCH_PARENT, 10f));
+
+			play_right_button_layout
+					.setLayoutParams(new LinearLayout.LayoutParams(0,
+							LayoutParams.MATCH_PARENT, 2f));
 			play_right_button_layout.setGravity(Gravity.CENTER | Gravity.LEFT);
 
 			play_right_button.setLayoutParams(play_right_button_params);
+			play_right_button.setTag("ing");
 
 		} else if (position + 1 == mThumbIds.length) {
 			play_left_button
@@ -121,12 +235,20 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 			play_right_button
 					.setBackgroundResource(R.drawable.play_camera_button);
 
+			play_switcher_layout.setLayoutParams(new LinearLayout.LayoutParams(
+					0, LayoutParams.MATCH_PARENT, 8f));
+
 			play_right_button_layout.setGravity(Gravity.CENTER | Gravity.RIGHT);
+			play_right_button_layout
+					.setLayoutParams(new LinearLayout.LayoutParams(0,
+							LayoutParams.MATCH_PARENT, 4f));
 
 			LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
 			play_right_button.setLayoutParams(params2);
+
+			play_right_button.setTag("last");
 
 		} else {
 			play_left_button
@@ -134,9 +256,16 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 			play_right_button
 					.setBackgroundResource(R.drawable.index_right_button);
 
+			play_switcher_layout.setLayoutParams(new LinearLayout.LayoutParams(
+					0, LayoutParams.MATCH_PARENT, 10f));
+
+			play_right_button_layout
+					.setLayoutParams(new LinearLayout.LayoutParams(0,
+							LayoutParams.MATCH_PARENT, 2f));
 			play_right_button_layout.setGravity(Gravity.CENTER | Gravity.LEFT);
 
 			play_right_button.setLayoutParams(play_right_button_params);
+			play_right_button.setTag("ing");
 
 		}
 	}
@@ -201,8 +330,8 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 			i.setImageResource(mThumbIds[position]);
 			i.setAdjustViewBounds(true);
 
-			i.setLayoutParams(new Gallery.LayoutParams(
-					LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+			i.setLayoutParams(new Gallery.LayoutParams(100,
+					LayoutParams.MATCH_PARENT));
 			return i;
 		}
 

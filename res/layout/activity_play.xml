@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ProgressWheel="http://schemas.android.com/apk/res/com.kmb.origami"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,36 +14,57 @@
         android:background="@drawable/play_bg"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/play_item_level"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <com.kmb.origami.lib.ProgressWheel
+                android:id="@+id/progressBarThree"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="40dp"
+                ProgressWheel:barColor="#FF0000"
+                ProgressWheel:barLength="10dp"
+                ProgressWheel:barWidth="5dp"
+                ProgressWheel:circleColor="@android:color/transparent"
+                ProgressWheel:rimColor="#8000"
+                ProgressWheel:rimWidth="0dp"
+                ProgressWheel:text=""
+                ProgressWheel:textColor="#222222"
+                ProgressWheel:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/play_item_level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textSize="20sp" />
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/play_main_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="150dp"
             android:gravity="center"
             android:orientation="horizontal" >
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:gravity="right|center"
-                android:layout_weight="2" >
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="right|center" >
 
                 <Button
                     android:id="@+id/play_left_button"
                     android:layout_width="30dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/index_left_button"
-                    
                     android:onClick="playButton" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/play_switcher_layout"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
                 android:layout_weight="10" >
@@ -56,9 +78,9 @@
             <LinearLayout
                 android:id="@+id/play_right_button_layout"
                 android:layout_width="0dp"
-                android:layout_height="150dp"
-                android:layout_weight="2" 
-                android:gravity="left|center">
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="left|center" >
 
                 <Button
                     android:id="@+id/play_right_button"
@@ -75,6 +97,7 @@
             android:layout_height="60dp"
             android:layout_marginLeft="100dp"
             android:layout_marginRight="100dp"
+            android:layout_marginTop="10dp"
             android:background="@android:color/transparent"
             android:spacing="4dp" />
     </LinearLayout>
