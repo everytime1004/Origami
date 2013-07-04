@@ -1,7 +1,5 @@
 package com.kmb.origami.lib;
 
-import java.util.Calendar;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -12,7 +10,6 @@ import android.graphics.Shader;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.kmb.origami.R;

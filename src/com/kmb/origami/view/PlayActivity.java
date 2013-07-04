@@ -1,13 +1,9 @@
 package com.kmb.origami.view;
 
-import java.io.FileNotFoundException;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,8 +28,8 @@ import android.widget.ViewSwitcher.ViewFactory;
 
 import com.kmb.origami.R;
 import com.kmb.origami.lib.ProgressWheel;
-import com.qualcomm.QCARSamples.CloudRecognition.CloudReco;
 
+@SuppressLint("HandlerLeak")
 @SuppressWarnings("deprecation")
 public class PlayActivity extends Activity implements OnItemSelectedListener,
 		ViewFactory, OnItemClickListener {
@@ -120,51 +116,19 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == RESULT_OK) {
-			Uri targetUri = data.getData();
 			Log.d("request Code", String.valueOf(requestCode));
-
-			Bitmap resultBitmap = null;
-			try {
-				resultBitmap = decodeUri(targetUri);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
 			Intent resultIntent = new Intent(getApplicationContext(),
 					ResultActivity.class);
 			Bundle extras = new Bundle();
-			extras.putParcelable("resultImage", resultBitmap);
+			extras.putString("resultImageUrl", data.getStringExtra("data"));
 			resultIntent.putExtras(extras);
 			startActivity(resultIntent);
-
 		} else {
 			// imageId_arr[requestCode - 1] = 0;
 			play_left_button.setClickable(true);
 			Log.d("RESULT_CANCEL", "CANCEL");
 		}
-	}
-
-	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
-		BitmapFactory.Options o = new BitmapFactory.Options();
-		o.inJustDecodeBounds = true;
-		BitmapFactory.decodeStream(
-				getContentResolver().openInputStream(selectedImage), null, o);
-
-		final int REQUIRED_SIZE = 300;
-
-		int width_tmp = o.outWidth, height_tmp = o.outHeight;
-		int scale = 1;
-		while (!(width_tmp / 2 < REQUIRED_SIZE && height_tmp / 2 < REQUIRED_SIZE)) {
-			width_tmp /= 2;
-			height_tmp /= 2;
-			scale *= 2;
-		}
-
-		BitmapFactory.Options o2 = new BitmapFactory.Options();
-		o2.inSampleSize = scale;
-		return BitmapFactory.decodeStream(
-				getContentResolver().openInputStream(selectedImage), null, o2);
 	}
 
 	public void playButton(View v) {
@@ -179,11 +143,13 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 			} else {
 				Toast.makeText(getApplicationContext(), "사진을 찍자",
 						Toast.LENGTH_LONG).show();
-//				Intent cameraIntent = new Intent(
-//						android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//				startActivityForResult(cameraIntent, 0);
-				Intent i = new Intent(this, CloudReco.class);
-				startActivity(i);
+				// Intent cameraIntent = new Intent(
+				// android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+				// startActivityForResult(cameraIntent, 0);
+				Intent i = new Intent(
+						this,
+						com.qualcomm.QCARSamples.CloudRecognition.CloudReco.class);
+				startActivityForResult(i, 1);
 			}
 		} else if (id == R.id.play_left_button) {
 			if (mCurrentPosition == 0) {

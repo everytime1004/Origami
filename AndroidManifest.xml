@@ -8,15 +8,58 @@
         android:minSdkVersion="11"
         android:targetSdkVersion="17" />
 
-    <!-- 네트워크 접속 권한 -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!--
+        The OpenGL ES version required by the application.
 
+        NOTE: The following tag hides this application in Google Play from
+        devices that do not support OpenGL ES 2.0.
+    -->
     <uses-feature android:glEsVersion="0x00020000" />
+
+    <!--
+         The application requires a camera.
+         
+         NOTE: Any application that requests the CAMERA permission but does not
+         declare any camera features with the <uses-feature> element will be 
+         assumed to use all camera features (auto-focus and flash). Thus, the 
+         application will not be compatible with devices that do not support 
+         all camera features. Please use <uses-feature> to declare only the 
+         camera features that your application does need. For instance, if you 
+         request the CAMERA permission, but you do not need auto-focus or 
+         flash, then declare only the android.hardware.camera feature. The 
+         other camera features that you do not request will no longer be 
+         assumed as required. 
+    -->
     <uses-feature android:name="android.hardware.camera" />
 
-    <uses-permission android:name="android.permission.CAMERA" />
+    <!--
+      NOTE: The setting 'android:launchMode="singleTask"' makes sure
+      that the activity can begin only one task and the device can hold only 
+      one instance of the activity at a time. However, it allows other 
+      activities to be part of its task (unlike the 'singleInstance' mode). 
+      It's at the root of the activity stack, but other activities (necessarily 
+      "standard" and "singleTop" activities) can be launched into the same task.
+      If this attribute is not set, the default value 'standard' is used, which 
+      would allow the activity to be launched multiple times.
+    -->
+
+
+    <!-- Add this permission to get access to the camera -->
+     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Add this permission to allow opening network sockets -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+      Add this permission to check which network access properties 
+      (e.g. active type: 3G/WiFi)
+    -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Add this permission to access WLAN MAC address -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- Add this permission to access HW ID -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
