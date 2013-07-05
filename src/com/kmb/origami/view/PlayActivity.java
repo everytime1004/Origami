@@ -124,6 +124,7 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 			extras.putString("resultImageUrl", data.getStringExtra("data"));
 			resultIntent.putExtras(extras);
 			startActivity(resultIntent);
+			finish();
 		} else {
 			// imageId_arr[requestCode - 1] = 0;
 			play_left_button.setClickable(true);
