@@ -42,17 +42,17 @@ public final class R {
 		public static final int indicator_right_padding = 0x7f06001d;
 	}
 	public static final class drawable {
-		public static final int default_ptr_flip = 0x7f0200a6;
-		public static final int default_ptr_rotate = 0x7f0200a7;
-		public static final int ic_launcher = 0x7f0200a9;
-		public static final int indicator_arrow = 0x7f0200af;
-		public static final int indicator_bg_bottom = 0x7f0200b0;
-		public static final int indicator_bg_top = 0x7f0200b1;
+		public static final int default_ptr_flip = 0x7f0200aa;
+		public static final int default_ptr_rotate = 0x7f0200ab;
+		public static final int ic_launcher = 0x7f0200ad;
+		public static final int indicator_arrow = 0x7f0200b3;
+		public static final int indicator_bg_bottom = 0x7f0200b4;
+		public static final int indicator_bg_top = 0x7f0200b5;
 	}
 	public static final class id {
 		public static final int both = 0x7f090013;
 		public static final int disabled = 0x7f090010;
-		public static final int fl_inner = 0x7f090080;
+		public static final int fl_inner = 0x7f090082;
 		public static final int flip = 0x7f090018;
 		public static final int gridview = 0x7f090019;
 		public static final int manualOnly = 0x7f090014;
@@ -60,18 +60,18 @@ public final class R {
 		public static final int pullFromEnd = 0x7f090012;
 		public static final int pullFromStart = 0x7f090011;
 		public static final int pullUpFromBottom = 0x7f090016;
-		public static final int pull_to_refresh_image = 0x7f090081;
-		public static final int pull_to_refresh_progress = 0x7f090082;
-		public static final int pull_to_refresh_sub_text = 0x7f090084;
-		public static final int pull_to_refresh_text = 0x7f090083;
+		public static final int pull_to_refresh_image = 0x7f090083;
+		public static final int pull_to_refresh_progress = 0x7f090084;
+		public static final int pull_to_refresh_sub_text = 0x7f090086;
+		public static final int pull_to_refresh_text = 0x7f090085;
 		public static final int rotate = 0x7f090017;
 		public static final int scrollview = 0x7f09001b;
 		public static final int viewpager = 0x7f09001c;
 		public static final int webview = 0x7f09001a;
 	}
 	public static final class layout {
-		public static final int pull_to_refresh_header_horizontal = 0x7f03002e;
-		public static final int pull_to_refresh_header_vertical = 0x7f03002f;
+		public static final int pull_to_refresh_header_horizontal = 0x7f03002f;
+		public static final int pull_to_refresh_header_vertical = 0x7f030030;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f070000;

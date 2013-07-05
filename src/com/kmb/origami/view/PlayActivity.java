@@ -99,6 +99,31 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		spinHandler.sendEmptyMessage(0);
 		pw_three.spin();
 
+		// play_gallery.setOnTouchListener(new Gallery.OnTouchListener() {
+		//
+		// @Override
+		// public boolean onTouch(View v, MotionEvent event) {
+		// switch (event.getActionMasked()) {
+		//
+		// case MotionEvent.ACTION_DOWN:
+		// Log.d("Action_DOWN","DOWN");
+		//
+		// case MotionEvent.ACTION_MOVE:
+		// Log.d("Action_MOVE","MOVE");
+		//
+		// case MotionEvent.ACTION_SCROLL:
+		// Log.d("Action_SCROLL","SCROLL");
+		// case MotionEvent.ACTION_UP:
+		// Log.d("ACTION_UP","UP");
+		//
+		// default:
+		// break;
+		// }
+		//
+		// return false;
+		// }
+		// });
+
 	}
 
 	@Override
@@ -128,6 +153,7 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		} else {
 			// imageId_arr[requestCode - 1] = 0;
 			play_left_button.setClickable(true);
+			mCurrentPosition = play_gallery.getCount()-1;
 			Log.d("RESULT_CANCEL", "CANCEL");
 		}
 	}
@@ -150,7 +176,8 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 				Intent i = new Intent(
 						this,
 						com.qualcomm.QCARSamples.CloudRecognition.CloudReco.class);
-				startActivityForResult(i, 1);
+
+				startActivityForResult(i, 3);
 			}
 		} else if (id == R.id.play_left_button) {
 			if (mCurrentPosition == 0) {
@@ -164,6 +191,7 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 
 	public void onItemSelected(AdapterView<?> parent, View v, int position,
 			long id) {
+
 		Log.d("current position in onItemSelected", String.valueOf(position));
 		play_item_level = (TextView) findViewById(R.id.play_item_level);
 		play_item_level.setText(String.valueOf(position + 1) + "/"
@@ -178,12 +206,19 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		// }
 		// mSwitcher.setImageResource(mImageIds[mCurrentPosition]);
 		// play_gallery.setSelection(mCurrentPosition);
+		if (mCurrentPosition == position) {
+			Log.d("test", "test");
+		}
+
 		mSwitcher.setImageResource(mImageIds[position]);
 
 		if (position == 0) {
 			play_left_button.setBackgroundResource(R.drawable.btn_left_disable);
+			play_left_button.setClickable(false);
+			
 			play_right_button
 					.setBackgroundResource(R.drawable.index_right_button);
+			play_right_button.setClickable(true);
 
 			play_switcher_layout.setLayoutParams(new LinearLayout.LayoutParams(
 					0, LayoutParams.MATCH_PARENT, 10f));
@@ -199,8 +234,11 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		} else if (position + 1 == mThumbIds.length) {
 			play_left_button
 					.setBackgroundResource(R.drawable.index_left_button);
+			play_left_button.setClickable(true);
+
 			play_right_button
 					.setBackgroundResource(R.drawable.play_camera_button);
+			play_right_button.setClickable(true);
 
 			play_switcher_layout.setLayoutParams(new LinearLayout.LayoutParams(
 					0, LayoutParams.MATCH_PARENT, 8f));
@@ -220,8 +258,11 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		} else {
 			play_left_button
 					.setBackgroundResource(R.drawable.index_left_button);
+			play_left_button.setClickable(true);
+
 			play_right_button
 					.setBackgroundResource(R.drawable.index_right_button);
+			play_right_button.setClickable(true);
 
 			play_switcher_layout.setLayoutParams(new LinearLayout.LayoutParams(
 					0, LayoutParams.MATCH_PARENT, 10f));
@@ -241,6 +282,13 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		// TODO Auto-generated method stub
 		Log.d("current position", String.valueOf(position));
+
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		if (mCurrentPosition <= position) {
 			mSwitcher.setInAnimation(AnimationUtils.loadAnimation(this,
