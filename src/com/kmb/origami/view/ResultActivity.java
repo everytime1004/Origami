@@ -21,6 +21,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.kmb.origami.R;
 import com.kmb.origami.controller.CacheManager;
@@ -37,8 +38,8 @@ public class ResultActivity extends Activity {
 
 		resultImage = (ImageView) findViewById(R.id.result_image);
 
-		BitmapDownloaderTask getImageTask = new BitmapDownloaderTask();
-		getImageTask.execute(getIntent().getStringExtra("resultImageUrl"));
+		 BitmapDownloaderTask getImageTask = new BitmapDownloaderTask();
+		 getImageTask.execute(getIntent().getStringExtra("resultImageUrl"));
 	}
 
 	public void resultButtonListener(View v) {
@@ -48,7 +49,14 @@ public class ResultActivity extends Activity {
 			resultIntent = new Intent(
 					android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 			startActivityForResult(resultIntent, 0);
+			Toast.makeText(getApplicationContext(), "자신이 접은 종이를 찍어주세요.",
+					Toast.LENGTH_LONG).show();
 		} else if (id == R.id.result_share_button) {
+			resultIntent = new Intent(
+					android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+			startActivityForResult(resultIntent, 1);
+			Toast.makeText(getApplicationContext(), "자신이 접은 종이를 찍어서 공유하세요.",
+					Toast.LENGTH_LONG).show();
 		} else if (id == R.id.result_main_button) {
 			resultIntent = new Intent(getApplicationContext(),
 					IndexActivity.class);
@@ -65,26 +73,39 @@ public class ResultActivity extends Activity {
 		if (resultCode == RESULT_OK) {
 			Uri targetUri = data.getData();
 			Log.d("request Code", String.valueOf(requestCode));
+			if (requestCode == 0) {
+				Bitmap picBitmap = null;
 
-			Bitmap picBitmap = null;
-			
-			try {
-				picBitmap = decodeUri(targetUri);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					picBitmap = decodeUri(targetUri);
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				try {
+					CacheManager.cacheDataForCollection(
+							getApplicationContext(), picBitmap, "1");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				Intent resultIntent = new Intent(getApplicationContext(),
+						CollectionActivity.class);
+				startActivity(resultIntent);
+				finish();
+			} else {
+				Intent shareIntent = new Intent(
+						android.content.Intent.ACTION_SEND);
+				shareIntent
+						.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+				shareIntent.setType("image/*");
+				// For a file in shared storage. For data in private storage,
+				// use a ContentProvider.
+				shareIntent.putExtra(Intent.EXTRA_STREAM, targetUri);
+				startActivity(Intent.createChooser(shareIntent, "Share via"));
 			}
-			
-			try {
-				CacheManager.cacheData(getApplicationContext(), picBitmap, "1");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			Intent resultIntent = new Intent(getApplicationContext(), CollectionActivity.class);			
-			startActivity(resultIntent);
-			finish();
 
 		} else {
 			// imageId_arr[requestCode - 1] = 0;

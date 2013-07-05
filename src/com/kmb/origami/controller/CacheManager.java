@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class CacheManager {
 
-	private static final long MAX_SIZE = 5242880L; // 5MB
+	private static final long MAX_SIZE = 52428800L; // 50MB
 
 	private CacheManager() {
 
@@ -50,6 +50,31 @@ public class CacheManager {
 		}
 	}
 
+	public static void cacheDataForCollection(Context context, Bitmap bitmap,
+			String name) throws IOException {
+
+		File cacheDir = context.getCacheDir();
+		long size = getDirSize(cacheDir);
+		long newSize = bitmap.getByteCount() + size;
+
+		if (newSize > MAX_SIZE) {
+			cleanDir(cacheDir, newSize - MAX_SIZE);
+		}
+
+		File cacheImage = new File(cacheDir.getAbsolutePath(), name);
+		OutputStream os = new FileOutputStream(cacheImage.getAbsolutePath());
+		try {
+			bitmap.compress(CompressFormat.JPEG, 100, os);
+		} finally {
+			try {
+				os.flush();
+				os.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public static Bitmap retrieveData(Context context, String name)
 			throws IOException {
 
@@ -64,6 +89,32 @@ public class CacheManager {
 
 		File cacheDir = context.getCacheDir();
 		File file = new File(cacheDir, imageCheck);
+
+		if (!file.exists()) {
+			// Data doesn't exist
+			Log.d("retrieveData", "before return null");
+			return null;
+		}
+
+		byte[] data = new byte[(int) file.length()];
+		FileInputStream is = new FileInputStream(file);
+		try {
+			is.read(data);
+		} finally {
+			is.close();
+		}
+
+		Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+		Log.d("retrieveData", "before return bitmap");
+		return bitmap;
+	}
+
+	public static Bitmap retrieveDataForCollection(Context context, String name)
+			throws IOException {
+
+		File cacheDir = context.getCacheDir();
+		File file = new File(cacheDir, name);
 
 		if (!file.exists()) {
 			// Data doesn't exist

@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.View;
+import android.view.View.OnDragListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
@@ -48,16 +50,28 @@ public class IndexActivity extends Activity implements ViewFactory {
 					startActivity(changeViewIntent);
 					break;
 				case 1:
+//					changeViewIntent = new Intent(getApplicationContext(),
+//							CollectionActivity.class);
 					changeViewIntent = new Intent(getApplicationContext(),
 							CollectionActivity.class);
 					startActivity(changeViewIntent);
 					break;
 				case 2:
-					changeViewIntent = new Intent(getApplicationContext(),
-							CollectionActivity.class);
-					startActivity(changeViewIntent);
+//					changeViewIntent = new Intent(getApplicationContext(),
+//							CollectionActivity.class);
+//					startActivity(changeViewIntent);
 					break;
 				}
+			}
+		});
+		
+		mSwitcher.setOnDragListener(new OnDragListener() {
+			
+			@Override
+			public boolean onDrag(View v, DragEvent event) {
+				// TODO Auto-generated method stub
+				Log.d("DragEvent", "action Drag");
+				return false;
 			}
 		});
 
