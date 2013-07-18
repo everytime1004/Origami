@@ -2,6 +2,7 @@ package com.kmb.origami.model;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,13 +22,27 @@ public class SingleItemRow extends LinearLayout {
 		inflater.inflate(R.layout.item_row, this, true);
 		singleItemIv = (ImageView) findViewById(R.id.singleItemIv);
 
-		selectImage(mSingleItem.getId());
+		if (mSingleItem.getId() <= mSingleItem.getMaxStage()) {
+			selectImage(mSingleItem.getId());
+			Log.d("Stage ID in row", String.valueOf(mSingleItem.getId()));
+		} else {
+			singleItemIv.setImageDrawable(this.getResources().getDrawable(
+					R.drawable.stage_lock));
+			singleItemIv.setClickable(false);
+			Log.d("Stage ID in row", String.valueOf(mSingleItem.getId()));
+		}
 
 	}
 
-	public void setImage(int id) {
+	public void setImage(int id, int maxStage) {
 
-		selectImage(id);
+		if (id <= maxStage) {
+			Log.d("maxStage", String.valueOf(maxStage));
+			selectImage(id);
+		} else {
+			singleItemIv.setImageDrawable(this.getResources().getDrawable(
+					R.drawable.stage_lock));
+		}
 
 	}
 
@@ -60,28 +75,4 @@ public class SingleItemRow extends LinearLayout {
 			break;
 		}
 	}
-	//
-	// public void setCategory(String data) {
-	// comment_author.setText(data);
-	// }
-	//
-	// public void setUpdated_day(String data) {
-	// comment_updated_day.setText(data);
-	// }
-	//
-	// public void setUpdated_time(String data) {
-	// comment_updated_time.setText(data);
-	// }
-	//
-	// public void setAuthor(String data) {
-	// comment_author.setText(data);
-	// }
-	//
-	// public void setDeleteBtn(boolean isOwner) {
-	// if (isOwner) {
-	// commentDeleteBtn.setVisibility(Button.VISIBLE);
-	// } else {
-	// commentDeleteBtn.setVisibility(Button.INVISIBLE);
-	// }
-	// }
 }

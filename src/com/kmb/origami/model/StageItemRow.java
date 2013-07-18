@@ -28,6 +28,7 @@ public class StageItemRow extends LinearLayout {
 		} else {
 			singleStageIv.setImageDrawable(this.getResources().getDrawable(
 					R.drawable.stage_lock));
+			singleStageIv.setClickable(false);
 			Log.d("Stage ID in row", String.valueOf(mSingleStage.getId()));
 		}
 
@@ -44,6 +45,7 @@ public class StageItemRow extends LinearLayout {
 	}
 
 	private void selectImage(int id, String mSubject) {
+		// if else 에서 else는 주제별 눌렀을 때 사진 박으면됨
 		switch (id) {
 		case 1:
 			if (mSubject.equals("single")) {
@@ -97,28 +99,4 @@ public class StageItemRow extends LinearLayout {
 			break;
 		}
 	}
-	//
-	// public void setCategory(String data) {
-	// comment_author.setText(data);
-	// }
-	//
-	// public void setUpdated_day(String data) {
-	// comment_updated_day.setText(data);
-	// }
-	//
-	// public void setUpdated_time(String data) {
-	// comment_updated_time.setText(data);
-	// }
-	//
-	// public void setAuthor(String data) {
-	// comment_author.setText(data);
-	// }
-	//
-	// public void setDeleteBtn(boolean isOwner) {
-	// if (isOwner) {
-	// commentDeleteBtn.setVisibility(Button.VISIBLE);
-	// } else {
-	// commentDeleteBtn.setVisibility(Button.INVISIBLE);
-	// }
-	// }
 }

@@ -30,9 +30,14 @@ import com.kmb.origami.model.StageItemAdapter;
 
 public class MainActivity extends Activity {
 
-	private int mMaxStage = 1;
+	private int mMaxStage;
+	private int mMaxOfSingleStage;
 
-	private SharedPreferences mPreferences;
+	private int currentStage;
+
+	private SharedPreferences mMaxStagePreferences; // 몇 스테지 까지 깻는지
+	private SharedPreferences mMaxOfSingleStagePreferences; // 한 스테이지에 대한 최대 몇
+															// 번째 까지 성공했는지
 
 	private ImageView leftCloud = null;
 	private ImageView middleCloud = null;
@@ -43,17 +48,13 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		mPreferences = getSharedPreferences("Auth", MODE_PRIVATE);
+		mMaxStagePreferences = getSharedPreferences("MaxStageInfo",
+				MODE_PRIVATE);
+		mMaxOfSingleStagePreferences = getSharedPreferences("MaxOfSingleStage",
+				MODE_PRIVATE);
 
-		if (mPreferences.contains("mMaxStage")) {
-			mMaxStage = mPreferences.getInt("mMaxStage", 1);
-		} else {
-			SharedPreferences.Editor editor = mPreferences.edit();
-			// save the returned auth_token into
-			// the SharedPreferences
-			editor.putInt("Auth", mMaxStage);
-			editor.commit();
-		}
+		mMaxStage = mMaxStagePreferences.getInt("mMaxStage", 1);
+		Log.d("MaxStage", String.valueOf(mMaxStage));
 
 		leftCloud = (ImageView) findViewById(R.id.cloud_left);
 		middleCloud = (ImageView) findViewById(R.id.cloud_middle);
@@ -66,11 +67,12 @@ public class MainActivity extends Activity {
 
 		int id = v.getId();
 		if (id == R.id.main_single_button) {
-			buildDialog("stage", "single");
+			buildDialog("stage", "single", 0);
 		} else if (id == R.id.main_theme_button) {
-			buildDialog("stage", "theme");
+			buildDialog("stage", "theme", 0);
 		} else if (id == R.id.main_boast_button) {
-			Toast.makeText(getApplicationContext(), "공사 중입니다.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "공사 중입니다.",
+					Toast.LENGTH_SHORT).show();
 			Intent changeViewIntent = new Intent(this, BoastActivity.class);
 			startActivity(changeViewIntent);
 		}
@@ -85,8 +87,13 @@ public class MainActivity extends Activity {
 					.getItemAtPosition(position);
 			Log.d("id", String.valueOf(selectedItem.getId()));
 
-			buildDialog("SingleItem", "single");
-			
+			Log.d("mMaxStage", String.valueOf(mMaxStage));
+
+			if (selectedItem.getId() <= mMaxStage) {
+				currentStage = selectedItem.getId();
+				buildDialog("singleItem", "single", selectedItem.getId());
+			}
+
 		}
 	}
 
@@ -99,10 +106,16 @@ public class MainActivity extends Activity {
 					.getItemAtPosition(position);
 			Log.d("id", String.valueOf(selectedItem.getId()));
 
-			Intent startFoldingIntent = new Intent(getApplicationContext(),
-					PlayActivity.class);
-			startFoldingIntent.putExtra("level", selectedItem.getId());
-			startActivity(startFoldingIntent);
+			Log.d("mMaxOfSingleStage", String.valueOf(mMaxOfSingleStage));
+
+			if (selectedItem.getId() <= mMaxOfSingleStage) {
+				Intent startFoldingIntent = new Intent(getApplicationContext(),
+						PlayActivity.class);
+				startFoldingIntent.putExtra("currentStage", currentStage);
+				startFoldingIntent
+						.putExtra("currentItem", selectedItem.getId());
+				startActivity(startFoldingIntent);
+			}
 
 		}
 	}
@@ -123,7 +136,16 @@ public class MainActivity extends Activity {
 		rightCloud.startAnimation(ta_rightCloud);
 	}
 
-	private void buildDialog(String which, String subject) {
+	/**
+	 * 
+	 * @param which
+	 *            stage인지 singleItem인지 구분
+	 * @param subject
+	 *            한 개씩 접기인지 주제별 접기인지 구분
+	 * @param position
+	 *            몇 번째 아이템이지
+	 */
+	private void buildDialog(String which, String subject, int position) {
 		if (which.equals("stage")) {
 
 			ArrayList<StageItem> stageItemArray = new ArrayList<StageItem>();
@@ -165,14 +187,19 @@ public class MainActivity extends Activity {
 			stageItemListView.setAdapter(stageItemAdapter);
 
 			dialog.show();
-		} else {
+		} else if (which.equals("singleItem")) {
 
 			ArrayList<SingleItem> singleItemArray = new ArrayList<SingleItem>();
 			SingleItemAdapter singleItemAdapter = null;
 			HorizontalListView singleItemListView = null;
 
+			mMaxOfSingleStage = mMaxOfSingleStagePreferences.getInt(
+					String.valueOf(position), 1);
+
 			for (int i = 1; i <= 5; i++) {
-				singleItemArray.add(new SingleItem(i));
+				singleItemArray.add(new SingleItem(i,
+						mMaxOfSingleStagePreferences.getInt(
+								String.valueOf(position), 1)));
 			}
 
 			Dialog dialog = new Dialog(MainActivity.this);
@@ -204,6 +231,47 @@ public class MainActivity extends Activity {
 			singleItemAdapter = new SingleItemAdapter(MainActivity.this,
 					singleItemArray);
 			singleItemListView.setAdapter(singleItemAdapter);
+
+			dialog.show();
+		} else {
+			// 주제별 눌렀을 때
+			ArrayList<StageItem> stageItemArray = new ArrayList<StageItem>();
+			StageItemAdapter stageItemAdapter = null;
+			HorizontalListView stageItemListView = null;
+
+			for (int i = 1; i <= 5; i++) {
+				stageItemArray.add(new StageItem(i, mMaxStage, subject));
+			}
+
+			Dialog dialog = new Dialog(MainActivity.this);
+
+			// 타이틀바 없애기(setContentView 전에 선언해줘야 한다)
+			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+			dialog.setContentView(R.layout.main_stage_item_list_view);
+
+			stageItemListView = (HorizontalListView) dialog
+					.findViewById(R.id.stage_item_lv);
+			dialog.setCancelable(true);
+
+			// dialog 사이즈 변경
+			WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+			lp.copyFrom(dialog.getWindow().getAttributes());
+			lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+			lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+			Window window = dialog.getWindow();
+			window.setAttributes(lp);
+
+			dialog.getWindow().getAttributes().gravity = Gravity.CENTER;
+
+			// 배경색 투명으로
+			dialog.getWindow().setBackgroundDrawable(
+					new ColorDrawable(Color.TRANSPARENT));
+
+			stageItemListView.setOnItemClickListener(new stageItemListener());
+			stageItemAdapter = new StageItemAdapter(MainActivity.this,
+					stageItemArray);
+			stageItemListView.setAdapter(stageItemAdapter);
 
 			dialog.show();
 		}

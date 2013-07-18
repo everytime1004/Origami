@@ -32,16 +32,54 @@ public class ResultActivity extends Activity {
 	ImageView resultImage = null;
 	Bitmap resultBitmap = null;
 
-	private SharedPreferences mPreferences;
+	private SharedPreferences mImageNumPreferences; // 이미지 몇개 저장
+	private SharedPreferences mMaxStagePreferences; // 몇 스테지 까지 깻는지
+	private SharedPreferences mMaxOfSingleStagePreferences; // 한 스테이지에 대한 최대 몇
+															// 번째 까지 성공했는지
+
+	private Object mLocker = new Object();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_result);
 
+		synchronized (mLocker) {
+			int currentStage = getIntent().getIntExtra("currentStage", 0);
+			int currentItem = getIntent().getIntExtra("currentItem", 0);
+			mMaxStagePreferences = getSharedPreferences("MaxStageInfo",
+					MODE_PRIVATE);
+			mMaxOfSingleStagePreferences = getSharedPreferences(
+					"MaxOfSingleStage", MODE_PRIVATE);
+			if (currentItem == 5 && currentStage == 5) {
+				Toast.makeText(getApplicationContext(),
+						"모든 스테이지를 클리어 했습니다!!!! 축하드립니다.", Toast.LENGTH_LONG)
+						.show();
+			} else if (currentItem == mMaxOfSingleStagePreferences.getInt(
+					String.valueOf(currentStage), 0)) {
+				SharedPreferences.Editor mMaxStageEditor = mMaxStagePreferences
+						.edit();
+				SharedPreferences.Editor mMaxOfSingleStageEditor = mMaxOfSingleStagePreferences
+						.edit();
+				if (currentItem == 0) {
+					mMaxStageEditor.putInt("maxStage", 2);
+					mMaxStageEditor.commit();
+					mMaxOfSingleStageEditor.putInt(
+							String.valueOf(currentStage + 1), 1);
+				} else {
+
+					mMaxOfSingleStageEditor.putInt(
+							String.valueOf(currentStage), currentItem + 1);
+					mMaxOfSingleStageEditor.commit();
+				}
+
+			}
+
+		}
+
 		resultImage = (ImageView) findViewById(R.id.result_image);
 
-		mPreferences = getSharedPreferences("ImageNum", MODE_PRIVATE);
+		mImageNumPreferences = getSharedPreferences("ImageNum", MODE_PRIVATE);
 
 		BitmapDownloaderTask getImageTask = new BitmapDownloaderTask();
 		getImageTask.execute(getIntent().getStringExtra("resultImageUrl"));
@@ -51,7 +89,7 @@ public class ResultActivity extends Activity {
 		Intent resultIntent = null;
 		int id = v.getId();
 		if (id == R.id.result_save_button) {
-			if (mPreferences.getInt("numOfImage", 0) == 50) {
+			if (mImageNumPreferences.getInt("numOfImage", 0) == 50) {
 				Toast.makeText(getApplicationContext(), "최대 50개까지 추가가 가능합니다.",
 						Toast.LENGTH_LONG);
 			} else {
@@ -93,11 +131,11 @@ public class ResultActivity extends Activity {
 					e.printStackTrace();
 				}
 
-				int numOfImage = mPreferences.getInt("numOfImage", 0);
-				
+				int numOfImage = mImageNumPreferences.getInt("numOfImage", 0);
+
 				addImageToCache(picBitmap);
 
-				SharedPreferences.Editor editor = mPreferences.edit();
+				SharedPreferences.Editor editor = mImageNumPreferences.edit();
 				// save the returned auth_token into
 				// the SharedPreferences
 				editor.putInt("numOfImage", numOfImage + 1);
@@ -124,7 +162,7 @@ public class ResultActivity extends Activity {
 			Log.d("RESULT_CANCEL", "CANCEL");
 		}
 	}
-	
+
 	private void addImageToCache(Bitmap picImage) {
 		for (int i = 1; i <= 50; i++) {
 			Bitmap tmpImage = null;
@@ -135,10 +173,12 @@ public class ResultActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			if(tmpImage == null){
+
+			if (tmpImage == null) {
 				try {
-					CacheManager.cacheDataForCollection(getApplicationContext(), picImage, String.valueOf(i));
+					CacheManager.cacheDataForCollection(
+							getApplicationContext(), picImage,
+							String.valueOf(i));
 					return;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -146,8 +186,9 @@ public class ResultActivity extends Activity {
 				}
 			}
 		}
-		
-		Toast.makeText(getApplicationContext(), "50개 이상 추가할 수 없습니다.", Toast.LENGTH_LONG).show();
+
+		Toast.makeText(getApplicationContext(), "50개 이상 추가할 수 없습니다.",
+				Toast.LENGTH_LONG).show();
 	}
 
 	class BitmapDownloaderTask extends AsyncTask<String, Void, Boolean> {

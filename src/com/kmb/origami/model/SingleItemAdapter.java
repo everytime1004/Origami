@@ -43,7 +43,7 @@ public class SingleItemAdapter extends BaseAdapter {
 		} else {
 			mSingleItemView = (SingleItemRow) convertView;
 
-			mSingleItemView.setImage(mSingleItems.get(position).getId());
+			mSingleItemView.setImage(mSingleItems.get(position).getId(), mSingleItems.get(position).getMaxStage());
 		}
 
 		return mSingleItemView ;

@@ -1,18 +1,28 @@
 package com.kmb.origami.model;
 
 public class SingleItem {
-	private int id;
+	private int mId;
+	private int mMaxStage;
 
-	public SingleItem(int id) {
-		this.id = id;
+	public SingleItem(int id, int maxStage) {
+		this.mId = id;
+		this.mMaxStage = maxStage;
 	}
 
 	public int getId() {
-		return id;
+		return mId;
 	}
 
 	public void setId(int id) {
-		this.id = id;
+		this.mId = id;
+	}
+
+	public int getMaxStage() {
+		return mMaxStage;
+	}
+
+	public void setMaxStage(int maxStage) {
+		this.mMaxStage = maxStage;
 	}
 
 }

@@ -34,6 +34,9 @@ import com.kmb.origami.lib.ProgressWheel;
 @SuppressWarnings("deprecation")
 public class PlayActivity extends Activity implements OnItemSelectedListener,
 		ViewFactory, OnItemClickListener {
+	
+	private int currentStage;
+	private int currentItem;
 
 	private int mCurrentPosition = 0;
 	// private int mSelectedPosition = 0;
@@ -73,6 +76,9 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_play);
+		
+		currentItem = getIntent().getIntExtra("currentItem", 1);
+		currentStage = getIntent().getIntExtra("currentStage", 1);
 
 		play_item_level = (TextView) findViewById(R.id.play_item_level);
 		play_item_level.setText(String.valueOf(getIntent().getIntExtra("level",
@@ -99,32 +105,6 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		pw_three.setSpinSpeed(6);
 		spinHandler.sendEmptyMessage(0);
 		pw_three.spin();
-
-		// play_gallery.setOnTouchListener(new Gallery.OnTouchListener() {
-		//
-		// @Override
-		// public boolean onTouch(View v, MotionEvent event) {
-		// switch (event.getActionMasked()) {
-		//
-		// case MotionEvent.ACTION_DOWN:
-		// Log.d("Action_DOWN","DOWN");
-		//
-		// case MotionEvent.ACTION_MOVE:
-		// Log.d("Action_MOVE","MOVE");
-		//
-		// case MotionEvent.ACTION_SCROLL:
-		// Log.d("Action_SCROLL","SCROLL");
-		// case MotionEvent.ACTION_UP:
-		// Log.d("ACTION_UP","UP");
-		//
-		// default:
-		// break;
-		// }
-		//
-		// return false;
-		// }
-		// });
-
 	}
 
 	@Override
@@ -155,6 +135,8 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 					ResultActivity.class);
 			Bundle extras = new Bundle();
 			extras.putString("resultImageUrl", data.getStringExtra("data"));
+			extras.putInt("currentItem", currentItem);
+			extras.putInt("currentStage", currentStage);
 			resultIntent.putExtras(extras);
 			startActivity(resultIntent);
 			finish();
