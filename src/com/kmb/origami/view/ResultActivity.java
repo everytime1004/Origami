@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -31,6 +32,8 @@ public class ResultActivity extends Activity {
 	ImageView resultImage = null;
 	Bitmap resultBitmap = null;
 
+	private SharedPreferences mPreferences;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,19 +41,26 @@ public class ResultActivity extends Activity {
 
 		resultImage = (ImageView) findViewById(R.id.result_image);
 
-		 BitmapDownloaderTask getImageTask = new BitmapDownloaderTask();
-		 getImageTask.execute(getIntent().getStringExtra("resultImageUrl"));
+		mPreferences = getSharedPreferences("ImageNum", MODE_PRIVATE);
+
+		BitmapDownloaderTask getImageTask = new BitmapDownloaderTask();
+		getImageTask.execute(getIntent().getStringExtra("resultImageUrl"));
 	}
 
 	public void resultButtonListener(View v) {
 		Intent resultIntent = null;
 		int id = v.getId();
 		if (id == R.id.result_save_button) {
-			resultIntent = new Intent(
-					android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-			startActivityForResult(resultIntent, 0);
-			Toast.makeText(getApplicationContext(), "자신이 접은 종이를 찍어주세요.",
-					Toast.LENGTH_LONG).show();
+			if (mPreferences.getInt("numOfImage", 0) == 50) {
+				Toast.makeText(getApplicationContext(), "최대 50개까지 추가가 가능합니다.",
+						Toast.LENGTH_LONG);
+			} else {
+				resultIntent = new Intent(
+						android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+				startActivityForResult(resultIntent, 0);
+				Toast.makeText(getApplicationContext(), "자신이 접은 종이를 찍어주세요.",
+						Toast.LENGTH_LONG).show();
+			}
 		} else if (id == R.id.result_share_button) {
 			resultIntent = new Intent(
 					android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -83,13 +93,15 @@ public class ResultActivity extends Activity {
 					e.printStackTrace();
 				}
 
-				try {
-					CacheManager.cacheDataForCollection(
-							getApplicationContext(), picBitmap, "1");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				int numOfImage = mPreferences.getInt("numOfImage", 0);
+				
+				addImageToCache(picBitmap);
+
+				SharedPreferences.Editor editor = mPreferences.edit();
+				// save the returned auth_token into
+				// the SharedPreferences
+				editor.putInt("numOfImage", numOfImage + 1);
+				editor.commit();
 
 				Intent resultIntent = new Intent(getApplicationContext(),
 						CollectionActivity.class);
@@ -111,6 +123,31 @@ public class ResultActivity extends Activity {
 			// imageId_arr[requestCode - 1] = 0;
 			Log.d("RESULT_CANCEL", "CANCEL");
 		}
+	}
+	
+	private void addImageToCache(Bitmap picImage) {
+		for (int i = 1; i <= 50; i++) {
+			Bitmap tmpImage = null;
+			try {
+				tmpImage = CacheManager.retrieveDataForCollection(
+						getApplicationContext(), String.valueOf(i));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			if(tmpImage == null){
+				try {
+					CacheManager.cacheDataForCollection(getApplicationContext(), picImage, String.valueOf(i));
+					return;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		Toast.makeText(getApplicationContext(), "50개 이상 추가할 수 없습니다.", Toast.LENGTH_LONG).show();
 	}
 
 	class BitmapDownloaderTask extends AsyncTask<String, Void, Boolean> {

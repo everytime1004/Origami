@@ -164,4 +164,18 @@ public class CacheManager {
 
 		return size;
 	}
+
+	public static void delete(Context context, String name) {
+
+		File cacheDir = context.getCacheDir();
+		File file = new File(cacheDir, name);
+		if (!file.exists()) {
+			// Data doesn't exist
+			Log.d("retrieveData", "before return null");
+			return;
+		}
+
+		file.delete();
+
+	}
 }

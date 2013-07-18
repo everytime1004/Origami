@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 
@@ -69,6 +70,7 @@ public class MainActivity extends Activity {
 		} else if (id == R.id.main_theme_button) {
 			buildDialog("stage", "theme");
 		} else if (id == R.id.main_boast_button) {
+			Toast.makeText(getApplicationContext(), "공사 중입니다.", Toast.LENGTH_SHORT).show();
 			Intent changeViewIntent = new Intent(this, BoastActivity.class);
 			startActivity(changeViewIntent);
 		}
@@ -84,7 +86,7 @@ public class MainActivity extends Activity {
 			Log.d("id", String.valueOf(selectedItem.getId()));
 
 			buildDialog("SingleItem", "single");
-
+			
 		}
 	}
 

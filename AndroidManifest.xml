@@ -12,7 +12,7 @@
         The OpenGL ES version required by the application.
 
         NOTE: The following tag hides this application in Google Play from
-        devices that do not support OpenGL ES 2.0.
+        devices that do not support OpenGL ES 2.0.
     -->
     <uses-feature android:glEsVersion="0x00020000" />
 
@@ -28,7 +28,7 @@
          request the CAMERA permission, but you do not need auto-focus or 
          flash, then declare only the android.hardware.camera feature. The 
          other camera features that you do not request will no longer be 
-         assumed as required. 
+         assumed as required. 
     -->
     <uses-feature android:name="android.hardware.camera" />
 
@@ -40,19 +40,19 @@
       It's at the root of the activity stack, but other activities (necessarily 
       "standard" and "singleTop" activities) can be launched into the same task.
       If this attribute is not set, the default value 'standard' is used, which 
-      would allow the activity to be launched multiple times.
+      would allow the activity to be launched multiple times.
     -->
 
 
     <!-- Add this permission to get access to the camera -->
-     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- Add this permission to allow opening network sockets -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!--
       Add this permission to check which network access properties 
-      (e.g. active type: 3G/WiFi)
+      (e.g. active type: 3G/WiFi)
     -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -118,11 +118,20 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
-        <activity android:name="com.kmb.origami.view.BoardIndexActivity" >
+        <activity
+            android:name="com.kmb.origami.view.BoardIndexActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
-        <activity android:name="com.kmb.origami.view.BoardShowActivity" >
+        <activity
+            android:name="com.kmb.origami.view.BoardShowActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
-        <activity android:name="com.kmb.origami.view.BoardCreateActivity" >
+        <activity
+            android:name="com.kmb.origami.view.BoardCreateActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
         <activity
             android:name="com.qualcomm.QCARSamples.CloudRecognition.CloudReco"

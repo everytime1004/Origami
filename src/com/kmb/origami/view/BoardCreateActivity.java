@@ -1,6 +1,7 @@
 package com.kmb.origami.view;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.http.client.HttpResponseException;
@@ -12,18 +13,21 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -33,273 +37,105 @@ import com.kmb.origami.lib.UrlJsonAsyncTask;
 
 public class BoardCreateActivity extends SherlockActivity {
 
-	ImageView[] targetImage = new ImageView[5];
-	String[] imageData = new String[5];
-
 	private String mPostTitle;
+	private String mPostDescription;
 	private String mPostAuthor;
 	private String mPostPassword;
 
-	int[] imageId_arr = new int[50];
-	boolean isChange = false;
+	ImageView postImage = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_board_create);
 
-		LinearLayout postCreateView = (LinearLayout) findViewById(R.id.postCreateView);
-		ImageView newImage = new ImageView(getBaseContext());
-		newImage.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.MATCH_PARENT));
+		postImage = (ImageView) findViewById(R.id.postImage);
 
-		newImage.setImageBitmap((Bitmap) getIntent().getExtras().getParcelable(
-				"resultImage"));
+		postImage.setImageBitmap((Bitmap) getIntent().getExtras()
+				.getParcelable("resultImage"));
 
-		postCreateView.addView(newImage);
-
-		// Button addImageBtn = (Button) findViewById(R.id.addImageBtn);
-		//
-		// addImageBtn.setOnClickListener(new addImageBtnListener());
+		postImage.setOnClickListener(new imageListener());
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-
-		Log.d("Present Image[0] Status", String.valueOf(imageId_arr[0]));
-		Log.d("Present Image[1] Status", String.valueOf(imageId_arr[1]));
-		Log.d("Present Image[2] Status", String.valueOf(imageId_arr[2]));
-		Log.d("Present Image[3] Status", String.valueOf(imageId_arr[3]));
-		Log.d("Present Image[4] Status", String.valueOf(imageId_arr[4]));
 	}
 
-	// private class addImageBtnListener implements OnClickListener {
-	// @Override
-	// public void onClick(View v) {
-	//
-	// final View view = v;
-	//
-	// AlertDialog.Builder getImageFrom = new AlertDialog.Builder(
-	// BoardCreateActivity.this);
-	// getImageFrom.setTitle("Select:");
-	// final CharSequence[] opsChars = {
-	// getResources().getString(R.string.takePic),
-	// getResources().getString(R.string.openGallery) };
-	// getImageFrom.setItems(opsChars,
-	// new android.content.DialogInterface.OnClickListener() {
-	//
-	// @Override
-	// public void onClick(DialogInterface dialog, int which) {
-	// if (which == 0) {
-	//
-	// // TODO Auto-generated method stub
-	// // imageNum = 이미지 개수
-	// int add_image_flag = 0; // 몇 번째에 사진을 추가 할지 경정
-	// int max_flag = 0;
-	//
-	// for (int t = 1; t < 50; t++) {
-	// if (imageId_arr[t - 1] == 0) {
-	// add_image_flag = t;
-	// break;
-	// } else if (imageId_arr[t - 1] > 0) {
-	// max_flag++;
-	// }
-	//
-	// }
-	// if (max_flag != 1) {
-	// getImageFromWhat(add_image_flag, which);
-	// } else {
-	// Toast.makeText(view.getContext(),
-	// "사진은 5개까지 추가가 가능합니다.",
-	// Toast.LENGTH_LONG).show();
-	// }
-	//
-	// } else if (which == 1) {
-	// // TODO Auto-generated method stub
-	// // imageNum = 이미지 개수
-	// int add_image_flag = 0; // 몇 번째에 사진을 추가 할지 경정
-	// int max_flag = 0;
-	//
-	// for (int t = 1; t < 50; t++) {
-	// if (imageId_arr[t - 1] == 0) {
-	// add_image_flag = t;
-	// break;
-	// } else if (imageId_arr[t - 1] > 0) {
-	// max_flag++;
-	// }
-	//
-	// }
-	// if (max_flag != 5) {
-	// getImageFromWhat(add_image_flag, which);
-	// } else {
-	// Toast.makeText(view.getContext(),
-	// "사진은 5개까지 추가가 가능합니다.",
-	// Toast.LENGTH_LONG).show();
-	// }
-	// }
-	// dialog.dismiss();
-	// }
-	// });
-	// getImageFrom.show();
-	//
-	// }
-	// }
-	//
-	// private class imageListener implements OnClickListener {
-	// @Override
-	// public void onClick(View v) {
-	// // TODO Auto-generated method stub
-	// Log.d("Change Image ID", String.valueOf(v.getId()));
-	// isChange = true;
-	// final int tmpImageId = v.getId();
-	//
-	// AlertDialog.Builder getImageFrom = new AlertDialog.Builder(
-	// BoardCreateActivity.this);
-	// getImageFrom.setTitle("선택하세요");
-	// final CharSequence[] opsChars = {
-	// getResources().getString(R.string.takePic),
-	// getResources().getString(R.string.openGallery) };
-	// getImageFrom.setItems(opsChars,
-	// new android.content.DialogInterface.OnClickListener() {
-	//
-	// @Override
-	// public void onClick(DialogInterface dialog, int which) {
-	// if (which == 0) {
-	// getImageFromWhat(tmpImageId, 0);
-	//
-	// } else if (which == 1) {
-	// getImageFromWhat(tmpImageId, 1);
-	// }
-	// dialog.dismiss();
-	// }
-	// });
-	// getImageFrom.show();
-	// }
-	// }
-	//
-	// private class deleteImageListner implements OnLongClickListener {
-	//
-	// @Override
-	// public boolean onLongClick(View v) {
-	// // @Override
-	//
-	// final Dialog dialog = new Dialog(BoardCreateActivity.this);
-	// dialog.setContentView(R.layout.task_remove_dialog);
-	// dialog.setTitle("삭제하시겠습니까?");
-	//
-	// final ImageView clickImage = (ImageView) findViewById(v.getId());
-	// final int clickImageId = v.getId();
-	// Log.d("Long Click Image ID", String.valueOf(v.getId()));
-	//
-	// // 취소 버튼
-	// ((Button) dialog.findViewById(R.id.todayCancelBtn))
-	// .setOnClickListener(new OnClickListener() {
-	// @Override
-	// public void onClick(View v) {
-	// dialog.dismiss();
-	// }
-	// });
-	// // 저장 버튼
-	// ((Button) dialog.findViewById(R.id.todayInputBtn))
-	// .setOnClickListener(new OnClickListener() {
-	// @Override
-	// public void onClick(View v) {
-	// Toast.makeText(getApplicationContext(), "삭제했습니다.",
-	// Toast.LENGTH_SHORT).show();
-	// clickImage.setImageBitmap(null);
-	// clickImage.setImageResource(0);
-	// imageId_arr[clickImageId - 1] = -1;
-	// Log.d("DeleteImageID", String.valueOf(clickImageId));
-	//
-	// Log.d("Present Image[0] Status",
-	// String.valueOf(imageId_arr[0]));
-	// Log.d("Present Image[1] Status",
-	// String.valueOf(imageId_arr[1]));
-	// Log.d("Present Image[2] Status",
-	// String.valueOf(imageId_arr[2]));
-	// Log.d("Present Image[3] Status",
-	// String.valueOf(imageId_arr[3]));
-	// Log.d("Present Image[4] Status",
-	// String.valueOf(imageId_arr[4]));
-	//
-	// dialog.dismiss();
-	// }
-	// });
-	// dialog.show();
-	// return false;
-	//
-	// }
-	// }
-	//
-	// @Override
-	// protected void onActivityResult(int requestCode, int resultCode, Intent
-	// data) {
-	// // TODO Auto-generated method stub
-	// super.onActivityResult(requestCode, resultCode, data);
-	//
-	// if (resultCode == RESULT_OK) {
-	// Uri targetUri = data.getData();
-	// try {
-	// Log.d("Add Image ID", String.valueOf(requestCode));
-	// if (isChange == true) {
-	// ImageView changeImage = (ImageView) findViewById(imageId_arr[requestCode
-	// - 1]);
-	//
-	// changeImage.setImageBitmap(decodeUri(targetUri));
-	// changeImage.setId(requestCode);
-	//
-	// isChange = false;
-	// } else {
-	// LinearLayout postCreateView = (LinearLayout)
-	// findViewById(R.id.postCreateView);
-	// ImageView newImage = new ImageView(getBaseContext());
-	// newImage.setLayoutParams(new LayoutParams(
-	// LayoutParams.MATCH_PARENT,
-	// LayoutParams.MATCH_PARENT));
-	//
-	// newImage.setImageBitmap(decodeUri(targetUri));
-	// newImage.setId(requestCode);
-	// Log.d("addImage Request Code", String.valueOf(requestCode));
-	// newImage.setOnLongClickListener(new deleteImageListner());
-	// newImage.setOnClickListener(new imageListener());
-	//
-	// postCreateView.addView(newImage);
-	// }
-	//
-	// } catch (FileNotFoundException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// } else {
-	// imageId_arr[requestCode - 1] = 0;
-	// Log.d("RESULT_CANCEL", "CANCEL");
-	// }
-	// }
-	//
-	// public void getImageFromWhat(int imageId, int cameraOrgallery) {
-	// if (cameraOrgallery == 1) {
-	// Intent galleryIntent = new Intent(
-	// Intent.ACTION_PICK,
-	// android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-	// imageId_arr[imageId - 1] = imageId;
-	// galleryIntent.setType("image/*");
-	// startActivityForResult(galleryIntent, imageId);
-	// } else {
-	// Intent cameraIntent = new Intent(
-	// android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-	// imageId_arr[imageId - 1] = imageId;
-	// startActivityForResult(cameraIntent, imageId);
-	// }
-	// }
+	private class imageListener implements OnClickListener {
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			Log.d("Change Image ID", String.valueOf(v.getId()));
+
+			AlertDialog.Builder getImageFrom = new AlertDialog.Builder(
+					BoardCreateActivity.this);
+			getImageFrom.setTitle("선택하세요");
+			final CharSequence[] opsChars = {
+					getResources().getString(R.string.takePic),
+					getResources().getString(R.string.openGallery) };
+			getImageFrom.setItems(opsChars,
+					new android.content.DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							if (which == 0) {
+								getImageFromWhat(0);
+
+							} else if (which == 1) {
+								getImageFromWhat(1);
+							}
+							dialog.dismiss();
+						}
+					});
+			getImageFrom.show();
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RESULT_OK) {
+			Uri targetUri = data.getData();
+			try {
+				Log.d("Add Image ID", String.valueOf(requestCode));
+
+				postImage.setImageBitmap(decodeUri(targetUri));
+
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			Log.d("RESULT_CANCEL", "CANCEL");
+		}
+	}
+
+	public void getImageFromWhat(int cameraOrgallery) {
+		if (cameraOrgallery == 1) {
+			Intent galleryIntent = new Intent(
+					Intent.ACTION_PICK,
+					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			galleryIntent.setType("image/*");
+			startActivityForResult(galleryIntent, 0);
+		} else {
+			Intent cameraIntent = new Intent(
+					android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+			startActivityForResult(cameraIntent, 0);
+		}
+	}
 
 	public void saveTask(View button) {
 		EditText postTitlelField = (EditText) findViewById(R.id.postTitle);
 		mPostTitle = postTitlelField.getText().toString();
+		EditText postDescriptionField = (EditText) findViewById(R.id.postDescription);
+		mPostDescription = postDescriptionField.getText().toString();
 		EditText postAuthorField = (EditText) findViewById(R.id.postAuthor);
 		mPostAuthor = postAuthorField.getText().toString();
-		EditText postPasswordField = (EditText) findViewById(R.id.postPassword);
+		EditText postPasswordField = (EditText) findViewById(R.id.postPasswd);
 		mPostPassword = postPasswordField.getText().toString();
 
 		if (mPostTitle.length() == 0 || mPostAuthor.length() == 0
@@ -311,8 +147,7 @@ public class BoardCreateActivity extends SherlockActivity {
 			// everything is ok!
 			CreateTaskTask createTask = new CreateTaskTask(
 					BoardCreateActivity.this);
-			createTask
-					.setMessageLoading("새 글을 등록 중입니다(사진이 많으면 오래 걸릴 수도 있습니다)...");
+			createTask.setMessageLoading("새 글을 등록 중입니다");
 			createTask.execute(NetworkInfo.CREATE_TASK_URL);
 		}
 	}
@@ -331,34 +166,17 @@ public class BoardCreateActivity extends SherlockActivity {
 			String response = null;
 			JSONObject json = new JSONObject();
 
-			int imageNum = 0;
-
-			for (int k = 0; k < 50; k++) {
-				if (imageId_arr[k] > 0) {
-					targetImage[imageNum] = (ImageView) findViewById(imageId_arr[k]);
-					imageNum++;
-
-					if (imageNum == 5) {
-						break;
-					}
-				}
-			}
-
-			for (int i = 0; i < imageNum; i++) {
-				ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
-				BitmapDrawable drawable = (BitmapDrawable) targetImage[i]
-						.getDrawable();
-				Bitmap imageBitmap = drawable.getBitmap();
-				imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100,
-						imageStream);
-				byte[] data = imageStream.toByteArray();
-				imageData[i] = new String(Base64.encode(data, 1));
-				try {
-					imageStream.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
+			BitmapDrawable drawable = (BitmapDrawable) postImage.getDrawable();
+			Bitmap imageBitmap = drawable.getBitmap();
+			imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageStream);
+			byte[] data = imageStream.toByteArray();
+			String imageData = new String(Base64.encode(data, 1));
+			try {
+				imageStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 			try {
@@ -366,13 +184,10 @@ public class BoardCreateActivity extends SherlockActivity {
 					json.put("success", false);
 					json.put("info", "Something went wrong. Retry!");
 					taskObj.put("title", mPostTitle);
+					taskObj.put("description", mPostDescription);
 					taskObj.put("author", mPostAuthor);
 					taskObj.put("password", mPostPassword);
-					taskObj.put("image1", imageData[0]);
-					// taskObj.put("image2", imageData[1]);
-					// taskObj.put("image3", imageData[2]);
-					// taskObj.put("image4", imageData[3]);
-					// taskObj.put("image5", imageData[4]);
+					taskObj.put("image", imageData);
 					holder.put("post", taskObj);
 					StringEntity se = new StringEntity(holder.toString(),
 							"utf-8");
@@ -406,8 +221,9 @@ public class BoardCreateActivity extends SherlockActivity {
 			try {
 				if (json.getBoolean("success")) {
 					finish();
-					
-					Intent createTaskSuccessIntent = new Intent(getApplicationContext(), BoardIndexActivity.class);
+
+					Intent createTaskSuccessIntent = new Intent(
+							getApplicationContext(), BoardIndexActivity.class);
 					startActivity(createTaskSuccessIntent);
 				}
 				Toast.makeText(context, json.getString("info"),
@@ -422,27 +238,25 @@ public class BoardCreateActivity extends SherlockActivity {
 		}
 	}
 
-	// private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException
-	// {
-	// BitmapFactory.Options o = new BitmapFactory.Options();
-	// o.inJustDecodeBounds = true;
-	// BitmapFactory.decodeStream(
-	// getContentResolver().openInputStream(selectedImage), null, o);
-	//
-	// final int REQUIRED_SIZE = 300;
-	//
-	// int width_tmp = o.outWidth, height_tmp = o.outHeight;
-	// int scale = 1;
-	// while (!(width_tmp / 2 < REQUIRED_SIZE && height_tmp / 2 <
-	// REQUIRED_SIZE)) {
-	// width_tmp /= 2;
-	// height_tmp /= 2;
-	// scale *= 2;
-	// }
-	//
-	// BitmapFactory.Options o2 = new BitmapFactory.Options();
-	// o2.inSampleSize = scale;
-	// return BitmapFactory.decodeStream(
-	// getContentResolver().openInputStream(selectedImage), null, o2);
-	// }
+	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
+		BitmapFactory.Options o = new BitmapFactory.Options();
+		o.inJustDecodeBounds = true;
+		BitmapFactory.decodeStream(
+				getContentResolver().openInputStream(selectedImage), null, o);
+
+		final int REQUIRED_SIZE = 300;
+
+		int width_tmp = o.outWidth, height_tmp = o.outHeight;
+		int scale = 1;
+		while (!(width_tmp / 2 < REQUIRED_SIZE && height_tmp / 2 < REQUIRED_SIZE)) {
+			width_tmp /= 2;
+			height_tmp /= 2;
+			scale *= 2;
+		}
+
+		BitmapFactory.Options o2 = new BitmapFactory.Options();
+		o2.inSampleSize = scale;
+		return BitmapFactory.decodeStream(
+				getContentResolver().openInputStream(selectedImage), null, o2);
+	}
 }

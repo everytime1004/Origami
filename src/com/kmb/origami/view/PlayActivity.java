@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,6 +135,13 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		spinHandler.removeMessages(0);
 		pw_three.stopSpinning();
 	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -152,8 +160,6 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 			finish();
 		} else {
 			// imageId_arr[requestCode - 1] = 0;
-			play_left_button.setClickable(true);
-			mCurrentPosition = play_gallery.getCount()-1;
 			Log.d("RESULT_CANCEL", "CANCEL");
 		}
 	}
@@ -182,6 +188,10 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		} else if (id == R.id.play_left_button) {
 			if (mCurrentPosition == 0) {
 				play_left_button.setClickable(false);
+				if(play_right_button.getTag().toString().equals("last")){
+					play_left_button.setClickable(true);
+					mCurrentPosition = play_gallery.getCount()-1;
+				}
 			}
 			play_gallery.performItemClick(v, mCurrentPosition - 1,
 					mCurrentPosition - 1);
@@ -215,7 +225,7 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		if (position == 0) {
 			play_left_button.setBackgroundResource(R.drawable.btn_left_disable);
 			play_left_button.setClickable(false);
-			
+
 			play_right_button
 					.setBackgroundResource(R.drawable.index_right_button);
 			play_right_button.setClickable(true);
@@ -345,7 +355,9 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 			i.setImageResource(mThumbIds[position]);
 			i.setAdjustViewBounds(true);
 
-			i.setLayoutParams(new Gallery.LayoutParams(100,
+			i.setLayoutParams(new Gallery.LayoutParams((int)TypedValue
+					.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60,
+							getResources().getDisplayMetrics()),
 					LayoutParams.MATCH_PARENT));
 			return i;
 		}

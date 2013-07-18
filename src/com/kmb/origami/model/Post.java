@@ -3,14 +3,18 @@ package com.kmb.origami.model;
 public class Post {
 	private int id;
 	private String title;
+	private String descirption;
 	private String updated_time;
 	private String author;
+	private String imageURL;
 
-	public Post(int id, String title, String updated_time, String author) {
+	public Post(int id, String title, String descirption, String updated_time, String author, String imageURL) {
 		this.id = id;
 		this.title = title;
+		this.descirption = descirption;
 		this.updated_time = updated_time;
 		this.author = author;
+		this.imageURL = imageURL;
 	}
 
 	public int getId() {
@@ -19,6 +23,14 @@ public class Post {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public String getDescription(){
+		return descirption;
+	}
+	
+	public void setDescription(String descirption){
+		this.descirption = descirption;
 	}
 
 	public String getTitle() {
@@ -43,5 +55,13 @@ public class Post {
 	
 	public void setAuthor(String author){
 		this.author = author;
+	}
+	
+	public String getImageURL(){
+		return imageURL;
+	}
+	
+	public void setImageURL(String imageURL){
+		this.imageURL = imageURL;
 	}
 }

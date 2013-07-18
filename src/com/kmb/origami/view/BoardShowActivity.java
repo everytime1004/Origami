@@ -38,7 +38,6 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.kmb.origami.R;
-import com.kmb.origami.controller.CacheManager;
 import com.kmb.origami.controller.NetworkInfo;
 import com.kmb.origami.lib.UrlJsonAsyncTask;
 
@@ -329,7 +328,7 @@ public class BoardShowActivity extends SherlockActivity {
 		}
 	}
 
-	Bitmap downloadBitmap(String url) {
+	public static Bitmap downloadBitmap(String url) {
 		final AndroidHttpClient client = AndroidHttpClient
 				.newInstance("Android");
 		String totalURL = null;
@@ -349,18 +348,6 @@ public class BoardShowActivity extends SherlockActivity {
 			e1.printStackTrace();
 		}
 
-		try {
-			if (CacheManager.retrieveData(getApplicationContext(), totalURL) != null) {
-				bitmap = CacheManager.retrieveData(getApplicationContext(),
-						totalURL);
-				Log.d("CacheMemory", "Image in Cache Memory");
-				return bitmap;
-			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
 		final HttpGet getRequest = new HttpGet(totalURL);
 
 		try {
@@ -373,8 +360,6 @@ public class BoardShowActivity extends SherlockActivity {
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inSampleSize = 1;
 			bitmap = BitmapFactory.decodeStream(inputStream);
-
-			CacheManager.cacheData(getApplicationContext(), bitmap, totalURL);
 
 			return bitmap;
 		} catch (Exception e) {

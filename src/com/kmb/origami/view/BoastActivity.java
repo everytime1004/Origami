@@ -161,7 +161,7 @@ public class BoastActivity extends Activity {
 		BitmapFactory.decodeStream(
 				getContentResolver().openInputStream(selectedImage), null, o);
 
-		final int REQUIRED_SIZE = 300;
+		final int REQUIRED_SIZE = 200;
 
 		int width_tmp = o.outWidth, height_tmp = o.outHeight;
 		int scale = 1;

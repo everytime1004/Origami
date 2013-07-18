@@ -16,7 +16,6 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
@@ -24,7 +23,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -34,19 +33,17 @@ import com.actionbarsherlock.widget.SearchView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 import com.kmb.origami.R;
 import com.kmb.origami.lib.UrlJsonAsyncTask;
 import com.kmb.origami.model.Post;
-import com.kmb.origami.model.PostAdapter;
+import com.kmb.origami.model.PostImageAdapter;
 
 public class BoardIndexActivity extends SherlockActivity {
 
-	private PullToRefreshListView mPullRefreshListView;
-
+	private PullToRefreshGridView mPullRefreshGridView;
 	private ArrayList<Post> tasksArray = new ArrayList<Post>();
-
-	private PostAdapter postAdapter;
+	private PostImageAdapter postImageAdapter;
 
 	private Button moreTaskBtn = null;
 
@@ -57,35 +54,31 @@ public class BoardIndexActivity extends SherlockActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_board_index);
 
-		mPullRefreshListView = (PullToRefreshListView) findViewById(R.id.post_index_list);
-		moreTaskBtn = (Button) findViewById(R.id.moreTaskBtn);
+		mPullRefreshGridView = (PullToRefreshGridView) findViewById(R.id.pull_refresh_grid);
 
-		mPullRefreshListView
-				.setOnRefreshListener(new OnRefreshListener<ListView>() {
+		// Set a listener to be invoked when the list should be refreshed.
+		mPullRefreshGridView
+				.setOnRefreshListener(new OnRefreshListener<GridView>() {
+
 					@Override
 					public void onRefresh(
-							PullToRefreshBase<ListView> refreshView) {
-						String label = DateUtils.formatDateTime(
-								getApplicationContext(),
-								System.currentTimeMillis(),
-								DateUtils.FORMAT_SHOW_TIME
-										| DateUtils.FORMAT_SHOW_DATE
-										| DateUtils.FORMAT_ABBREV_ALL);
+							PullToRefreshBase<GridView> refreshView) {
+						// TODO Auto-generated method stub
 
-						// Update the LastUpdatedLabel
-						refreshView.getLoadingLayoutProxy()
-								.setLastUpdatedLabel(label);
-
-						if (postAdapter != null) {
+						if (postImageAdapter != null) {
 							tasksArray.clear();
-							postAdapter.notifyDataSetChanged();
+							postImageAdapter.notifyDataSetChanged();
 
 							loadPostFromServer(com.kmb.origami.controller.NetworkInfo.TASKS_URL);
 						}
+
 					}
+
 				});
 
-		mPullRefreshListView.setOnScrollListener(new OnScrollListener() {
+		moreTaskBtn = (Button) findViewById(R.id.moreTaskBtn);
+
+		mPullRefreshGridView.setOnScrollListener(new OnScrollListener() {
 
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -101,7 +94,7 @@ public class BoardIndexActivity extends SherlockActivity {
 		});
 
 		// Add an end-of-list listener
-		mPullRefreshListView
+		mPullRefreshGridView
 				.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
 
 					@Override
@@ -125,9 +118,9 @@ public class BoardIndexActivity extends SherlockActivity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 
-		if (postAdapter != null) {
+		if (postImageAdapter != null) {
 			tasksArray.clear();
-			postAdapter.notifyDataSetChanged();
+			postImageAdapter.notifyDataSetChanged();
 
 			loadPostFromServer(com.kmb.origami.controller.NetworkInfo.TASKS_URL);
 		} else {
@@ -163,17 +156,8 @@ public class BoardIndexActivity extends SherlockActivity {
 
 					String author = jsonTask.getString("author");
 
-					String updated_time = jsonTask.getString("updated_at");
-					// 2013-06-03T06:39:00Z
-
-					String[] updated_time_split = updated_time.split("T");
-
-					updated_time = updated_time_split[0] + " "
-							+ updated_time_split[1].split(":")[0] + "시 "
-							+ updated_time_split[1].split(":")[1] + "분";
-
-					tasksArray.add(new Post(jsonTask.getInt("id"), jsonTask
-							.getString("title"), updated_time, author));
+					tasksArray.add(new Post(jsonTask.getInt("id"), "", "", "",
+							author, jsonTask.getString("imageURL")));
 
 					if (i == length - 1) {
 						offset_id = jsonTask.getInt("id") - 1;
@@ -181,17 +165,17 @@ public class BoardIndexActivity extends SherlockActivity {
 
 				}
 
-				PullToRefreshListView tasksListView = mPullRefreshListView;
-				if (tasksListView != null) {
-					postAdapter = new PostAdapter(BoardIndexActivity.this,
-							tasksArray);
-					tasksListView.setAdapter(postAdapter);
+				PullToRefreshGridView tasksGridView = mPullRefreshGridView;
+				if (tasksGridView != null) {
+					postImageAdapter = new PostImageAdapter(
+							BoardIndexActivity.this, tasksArray);
+					tasksGridView.setAdapter(postImageAdapter);
 				}
-				tasksListView.setOnItemClickListener(new TasklistListener());
+				tasksGridView.setOnItemClickListener(new TasklistListener());
 			} catch (Exception e) {
 				Toast.makeText(context, "게시물이 없습니다.", Toast.LENGTH_LONG).show();
 			} finally {
-				mPullRefreshListView.onRefreshComplete();
+				mPullRefreshGridView.onRefreshComplete();
 
 				super.onPostExecute(json);
 			}
@@ -218,35 +202,27 @@ public class BoardIndexActivity extends SherlockActivity {
 
 					String author = jsonTask.getString("author");
 
-					String updated_time = jsonTask.getString("updated_at");
-					// 2013-06-03T06:39:00Z
-
-					String[] updated_time_split = updated_time.split("T");
-
-					updated_time = updated_time_split[0] + " "
-							+ updated_time_split[1].split(":")[0] + "시 "
-							+ updated_time_split[1].split(":")[1] + "분";
-
-					tasksArray.add(new Post(jsonTask.getInt("id"), jsonTask
-							.getString("title"), updated_time, author));
+					tasksArray.add(new Post(jsonTask.getInt("id"), "", "", "",
+							author, jsonTask.getString("imageURL")));
 
 					if (i == length - 1) {
 						offset_id = jsonTask.getInt("id") - 1;
 					}
-
 				}
 
-				PullToRefreshListView tasksListView = mPullRefreshListView;
-				if (tasksListView != null) {
-					tasksListView.setAdapter(new PostAdapter(
-							BoardIndexActivity.this, tasksArray));
+				PullToRefreshGridView tasksGridView = mPullRefreshGridView;
+				if (tasksGridView != null) {
+					postImageAdapter = new PostImageAdapter(
+							BoardIndexActivity.this, tasksArray);
+					tasksGridView.setAdapter(postImageAdapter);
 				}
-				tasksListView.setOnItemClickListener(new TasklistListener());
+				tasksGridView.setOnItemClickListener(new TasklistListener());
+
 			} catch (Exception e) {
 				Toast.makeText(context, "게시물이 더 없습니다.", Toast.LENGTH_LONG)
 						.show();
 			} finally {
-				mPullRefreshListView.onRefreshComplete();
+				mPullRefreshGridView.onRefreshComplete();
 
 				super.onPostExecute(json);
 			}
@@ -273,11 +249,11 @@ public class BoardIndexActivity extends SherlockActivity {
 	}
 
 	private class GetPostsTaskBySearching extends UrlJsonAsyncTask {
-		String titleOrAuthor;
+		String mAuthor;
 
-		public GetPostsTaskBySearching(Context context, String titleOrAuthor) {
+		public GetPostsTaskBySearching(Context context, String author) {
 			super(context);
-			this.titleOrAuthor = titleOrAuthor;
+			this.mAuthor = author;
 		}
 
 		@Override
@@ -293,7 +269,7 @@ public class BoardIndexActivity extends SherlockActivity {
 				try {
 					json.put("success", false);
 					json.put("info", "Something went wrong. Retry!");
-					taskObj.put("searching", titleOrAuthor);
+					taskObj.put("searching", mAuthor);
 					holder.put("post", taskObj);
 					StringEntity se = new StringEntity(holder.toString(),
 							"utf-8");
@@ -326,7 +302,7 @@ public class BoardIndexActivity extends SherlockActivity {
 		protected void onPostExecute(JSONObject json) {
 			try {
 				tasksArray.clear();
-				postAdapter.notifyDataSetChanged();
+				postImageAdapter.notifyDataSetChanged();
 
 				JSONArray jsonTasks = json.getJSONObject("data").getJSONArray(
 						"posts");
@@ -338,33 +314,23 @@ public class BoardIndexActivity extends SherlockActivity {
 
 					String author = jsonTask.getString("author");
 
-					String updated_time = jsonTask.getString("updated_at");
-					// 2013-06-03T06:39:00Z
-
-					String[] updated_time_split = updated_time.split("T");
-
-					updated_time = updated_time_split[0] + " "
-							+ updated_time_split[1].split(":")[0] + "시 "
-							+ updated_time_split[1].split(":")[1] + "분";
-
-					tasksArray.add(new Post(jsonTask.getInt("id"), jsonTask
-							.getString("title"), updated_time, author));
+					tasksArray.add(new Post(jsonTask.getInt("id"), "", "", "",
+							author, jsonTask.getString("imageURL")));
 
 				}
 
-				PullToRefreshListView tasksListView = mPullRefreshListView;
-
-				if (tasksListView != null) {
-					postAdapter = new PostAdapter(BoardIndexActivity.this,
-							tasksArray);
-					tasksListView.setAdapter(postAdapter);
+				PullToRefreshGridView tasksGridView = mPullRefreshGridView;
+				if (tasksGridView != null) {
+					postImageAdapter = new PostImageAdapter(
+							BoardIndexActivity.this, tasksArray);
+					tasksGridView.setAdapter(postImageAdapter);
 				}
-				tasksListView.setOnItemClickListener(new TasklistListener());
+				tasksGridView.setOnItemClickListener(new TasklistListener());
 			} catch (Exception e) {
 				Toast.makeText(context, "게시물이 더 없습니다.", Toast.LENGTH_LONG)
 						.show();
 			} finally {
-				mPullRefreshListView.onRefreshComplete();
+				mPullRefreshGridView.onRefreshComplete();
 
 				super.onPostExecute(json);
 			}

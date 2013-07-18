@@ -2,7 +2,7 @@ package com.kmb.origami.controller;
 
 public class NetworkInfo {
 //	public static final String IP = "http://192.168.10.125:3000";
-	public static final String IP = "http://192.168.0.124:3000";
+	public static final String IP = "http://192.168.10.129:3000";
 
 //	public static final String LOGIN_API_ENDPOINT_URL = IP
 //			+ "/api/v1/sessions.json";

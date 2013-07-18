@@ -21,7 +21,7 @@ public class IndexActivity extends Activity implements ViewFactory {
 	private ImageView rightCloud = null;
 	private ImageSwitcher mSwitcher = null;
 	private int imageFlag = 0;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
