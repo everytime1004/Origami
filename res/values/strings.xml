@@ -15,7 +15,7 @@
     <string name="result_share_button_text">share</string>
     <string name="result_main_button_text">main</string>
     <string name="moreTask">더보기</string>
-    <string name="postShowTitle">제목</string>
+    <string name="postShowTitle">제목 </string>
     <string name="postShowTitleHint">제목을 입력해주세요</string>
     <string name="postShowDescription">내용</string>
     <string name="postShowDescriptionHint">덧붙일 말을 써주세요</string>

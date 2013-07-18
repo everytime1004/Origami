@@ -45,32 +45,32 @@ public final class R {
 		public static final int tiled_background = 0x7f0200ce;
 	}
 	public static final class id {
-		public static final int activity_splash_title = 0x7f09008b;
+		public static final int activity_splash_title = 0x7f090087;
 		public static final int button_start = 0x7f09001d;
-		public static final int camera_overlay_layout = 0x7f090074;
-		public static final int custom_view_book_background = 0x7f09006b;
-		public static final int custom_view_book_cover = 0x7f09006e;
-		public static final int custom_view_book_horizontal = 0x7f09006d;
-		public static final int custom_view_book_text_data = 0x7f09006f;
-		public static final int custom_view_description = 0x7f090071;
-		public static final int custom_view_information_container = 0x7f09006c;
-		public static final int custom_view_rating = 0x7f090073;
-		public static final int custom_view_title = 0x7f090070;
-		public static final int loading_layout = 0x7f090075;
-		public static final int overlay_close_button = 0x7f090076;
-		public static final int overlay_status = 0x7f090077;
-		public static final int splash_screen_subtitle = 0x7f09008c;
-		public static final int textView1 = 0x7f090072;
-		public static final int vuforia_logo = 0x7f09008e;
-		public static final int vuforia_splash_logo = 0x7f09008d;
+		public static final int camera_overlay_layout = 0x7f090073;
+		public static final int custom_view_book_background = 0x7f09006a;
+		public static final int custom_view_book_cover = 0x7f09006d;
+		public static final int custom_view_book_horizontal = 0x7f09006c;
+		public static final int custom_view_book_text_data = 0x7f09006e;
+		public static final int custom_view_description = 0x7f090070;
+		public static final int custom_view_information_container = 0x7f09006b;
+		public static final int custom_view_rating = 0x7f090072;
+		public static final int custom_view_title = 0x7f09006f;
+		public static final int loading_layout = 0x7f090074;
+		public static final int overlay_close_button = 0x7f090075;
+		public static final int overlay_status = 0x7f090076;
+		public static final int splash_screen_subtitle = 0x7f090088;
+		public static final int textView1 = 0x7f090071;
+		public static final int vuforia_logo = 0x7f09008a;
+		public static final int vuforia_splash_logo = 0x7f090089;
 	}
 	public static final class layout {
 		public static final int about_screen = 0x7f030000;
 		public static final int bitmap_layout = 0x7f030022;
 		public static final int book_data_layout = 0x7f030024;
 		public static final int camera_overlay = 0x7f030025;
-		public static final int result = 0x7f030032;
-		public static final int splash_screen = 0x7f030035;
+		public static final int result = 0x7f030031;
+		public static final int splash_screen = 0x7f030034;
 	}
 	public static final class string {
 		public static final int UPDATE_ERROR_AUTHORIZATION_FAILED_DESC = 0x7f070021;

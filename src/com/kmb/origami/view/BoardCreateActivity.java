@@ -18,14 +18,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore.Images;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -44,15 +47,14 @@ public class BoardCreateActivity extends SherlockActivity {
 
 	ImageView postImage = null;
 
+	Bitmap originBitmap = null;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_board_create);
 
 		postImage = (ImageView) findViewById(R.id.postImage);
-
-		postImage.setImageBitmap((Bitmap) getIntent().getExtras()
-				.getParcelable("resultImage"));
 
 		postImage.setOnClickListener(new imageListener());
 	}
@@ -93,6 +95,7 @@ public class BoardCreateActivity extends SherlockActivity {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -100,15 +103,48 @@ public class BoardCreateActivity extends SherlockActivity {
 
 		if (resultCode == RESULT_OK) {
 			Uri targetUri = data.getData();
-			try {
-				Log.d("Add Image ID", String.valueOf(requestCode));
+			Log.d("Add Image ID", String.valueOf(requestCode));
 
-				postImage.setImageBitmap(decodeUri(targetUri));
+			try {
+
+				originBitmap = Images.Media.getBitmap(getContentResolver(),
+						targetUri);
+
+				int width = originBitmap.getWidth() / 100;
+				int height = originBitmap.getHeight() / 100;
+				int size;
+				if (width > height) {
+					size = height;
+				} else {
+					size = width;
+				}
+
+				Log.d("compare size", String.valueOf(size));
+
+				originBitmap = resizeBitmap(originBitmap, size * 100);
 
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
+			// originBitmap = decodeUri(targetUri);
+			int Measuredwidth = 0;
+			Point size = new Point();
+			WindowManager w = getWindowManager();
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+				w.getDefaultDisplay().getSize(size);
+				Measuredwidth = size.x;
+			} else {
+				Display d = w.getDefaultDisplay();
+				Measuredwidth = d.getWidth();
+			}
+
+			postImage.setImageBitmap(resizeBitmap(originBitmap, (Measuredwidth/3)*2));
 		} else {
 			Log.d("RESULT_CANCEL", "CANCEL");
 		}
@@ -143,6 +179,11 @@ public class BoardCreateActivity extends SherlockActivity {
 			// input fields are empty
 			Toast.makeText(this, "빈 칸을 입력해주세요.", Toast.LENGTH_LONG).show();
 			return;
+		} else if (originBitmap == null) {
+			Toast.makeText(this, "사진을 추가해 주세요", Toast.LENGTH_LONG).show();
+		} else if (mPostAuthor.length() > 3) {
+			Toast.makeText(this, "작성자 이름은 3글자 이하로 해주세요.", Toast.LENGTH_LONG)
+					.show();
 		} else {
 			// everything is ok!
 			CreateTaskTask createTask = new CreateTaskTask(
@@ -167,8 +208,7 @@ public class BoardCreateActivity extends SherlockActivity {
 			JSONObject json = new JSONObject();
 
 			ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
-			BitmapDrawable drawable = (BitmapDrawable) postImage.getDrawable();
-			Bitmap imageBitmap = drawable.getBitmap();
+			Bitmap imageBitmap = originBitmap;
 			imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageStream);
 			byte[] data = imageStream.toByteArray();
 			String imageData = new String(Base64.encode(data, 1));
@@ -238,25 +278,18 @@ public class BoardCreateActivity extends SherlockActivity {
 		}
 	}
 
-	private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
-		BitmapFactory.Options o = new BitmapFactory.Options();
-		o.inJustDecodeBounds = true;
-		BitmapFactory.decodeStream(
-				getContentResolver().openInputStream(selectedImage), null, o);
+	private Bitmap resizeBitmap(Bitmap originBitmap, int size) {
+		int height = originBitmap.getHeight();
+		int width = originBitmap.getWidth();
 
-		final int REQUIRED_SIZE = 300;
-
-		int width_tmp = o.outWidth, height_tmp = o.outHeight;
-		int scale = 1;
-		while (!(width_tmp / 2 < REQUIRED_SIZE && height_tmp / 2 < REQUIRED_SIZE)) {
-			width_tmp /= 2;
-			height_tmp /= 2;
-			scale *= 2;
+		Bitmap resized = null;
+		while (height > size) {
+			resized = Bitmap.createScaledBitmap(originBitmap, (width * size)
+					/ height, size, true);
+			height = resized.getHeight();
+			width = resized.getWidth();
 		}
 
-		BitmapFactory.Options o2 = new BitmapFactory.Options();
-		o2.inSampleSize = scale;
-		return BitmapFactory.decodeStream(
-				getContentResolver().openInputStream(selectedImage), null, o2);
+		return resized;
 	}
 }

@@ -1,5 +1,7 @@
 package com.kmb.origami.model;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +42,14 @@ public class PostImageAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 
-		PostImageRow mPostImageView;
+		PostImageRow mPostImageView = null;
 		if (convertView == null) {
-			mPostImageView = new PostImageRow(mContext, mPosts.get(position));
+			try {
+				mPostImageView = new PostImageRow(mContext, mPosts.get(position));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			mPostImageView = (PostImageRow) convertView;
 
@@ -53,7 +60,4 @@ public class PostImageAdapter extends BaseAdapter {
 
 		return mPostImageView;
 	}
-	
-	
-
 }

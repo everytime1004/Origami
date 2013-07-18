@@ -1,5 +1,6 @@
 package com.kmb.origami.view;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -22,12 +23,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -52,11 +57,11 @@ public class BoardShowActivity extends SherlockActivity {
 
 	private static String DESTORY_TASK_ENDPOINT_URL;
 
-	private String[] imageBitMapURL = new String[5];
+	private String imageBitMapURL;
 
-	private Bitmap[] imageBitmap = new Bitmap[5];
+	private Bitmap imageBitmap;
 
-	private ImageView[] showImage = new ImageView[5];
+	private ImageView showImage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +78,6 @@ public class BoardShowActivity extends SherlockActivity {
 
 		task_show_title.setText(mPostTitle);
 		task_show_author.setText(mAuthor);
-
-		setTitle(mPostTitle);
 
 		SHOW_TASK_ENDPOINT_URL = NetworkInfo.IP + "/api/v1/posts/" + mPostId
 				+ ".json";
@@ -192,15 +195,9 @@ public class BoardShowActivity extends SherlockActivity {
 		// Actual download method, run in the task thread
 		protected Boolean doInBackground(String... params) {
 			// params comes from the execute() call: params[0] is the url.
-			showImage[0] = (ImageView) findViewById(R.id.showImage1);
+			showImage = (ImageView) findViewById(R.id.task_show_image);
 
-			// URL로부터 image 받아옴
-			for (int i = 0; i < 5; i++) {
-				if (imageBitMapURL[i] == null)
-					continue;
-				imageBitmap[i] = downloadBitmap(imageBitMapURL[i]);
-
-			}
+			imageBitmap = downloadBitmap(imageBitMapURL);
 
 			return true;
 		}
@@ -213,13 +210,12 @@ public class BoardShowActivity extends SherlockActivity {
 			}
 
 			// 비트맵이 널이 아니면 원래 image 초기화 시키고 새로운 이미지 넣고 보여지게 함
-			for (int k = 0; k < 5; k++) {
-				if (imageBitmap[k] != null) {
-					showImage[k].setImageResource(0);
-					showImage[k].setImageBitmap(imageBitmap[k]);
-					showImage[k].setVisibility(View.VISIBLE);
-				}
-			}
+
+			showImage.setImageResource(0);
+//			showImage.setImageBitmap(resizeBitmap(imageBitmap));
+			showImage.setImageBitmap(imageBitmap);
+			showImage.setVisibility(View.VISIBLE);
+
 		}
 	}
 
@@ -305,7 +301,7 @@ public class BoardShowActivity extends SherlockActivity {
 						 * 죽어버리므로 leak 발생해서 앱이 죽어버림
 						 */
 
-						imageBitMapURL[i] = image;
+						imageBitMapURL = image;
 					}
 				}
 
@@ -342,7 +338,8 @@ public class BoardShowActivity extends SherlockActivity {
 
 			totalURL = splitURL[0] + "//" + splitURL[2] + "/" + splitURL[3]
 					+ "/" + splitURL[4] + "/" + splitURL[5] + "/" + splitURL[6]
-					+ "/" + splitURL[7] + "/" + "thumb_" + lastEncodeURL;
+					+ "/" + splitURL[7] + "/" + lastEncodeURL;
+			Log.d("imageURL", totalURL);
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -357,9 +354,11 @@ public class BoardShowActivity extends SherlockActivity {
 
 			InputStream inputStream = connection.getInputStream();
 
-			BitmapFactory.Options options = new BitmapFactory.Options();
-			options.inSampleSize = 1;
-			bitmap = BitmapFactory.decodeStream(inputStream);
+			// BitmapFactory.Options options = new BitmapFactory.Options();
+			// options.inSampleSize = 1;
+			// bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+			bitmap = BitmapFactory.decodeStream(new FlushedInputStream(
+					inputStream));
 
 			return bitmap;
 		} catch (Exception e) {
@@ -376,6 +375,58 @@ public class BoardShowActivity extends SherlockActivity {
 		return null;
 	}
 
+	static class FlushedInputStream extends FilterInputStream {
+		public FlushedInputStream(InputStream inputStream) {
+			super(inputStream);
+		}
+
+		@Override
+		public long skip(long n) throws IOException {
+			long totalBytesSkipped = 0L;
+			while (totalBytesSkipped < n) {
+				long bytesSkipped = in.skip(n - totalBytesSkipped);
+				if (bytesSkipped == 0L) {
+					int b = read();
+					if (b < 0) {
+						break; // we reached EOF
+					} else {
+						bytesSkipped = 1; // we read one byte
+					}
+				}
+				totalBytesSkipped += bytesSkipped;
+			}
+			return totalBytesSkipped;
+		}
+	}
+
+	private Bitmap resizeBitmap(Bitmap originBitmap) {
+		int Measuredheight = 0;
+		Point size = new Point();
+		WindowManager w = getWindowManager();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+			w.getDefaultDisplay().getSize(size);
+			Log.d("width", String.valueOf(size.x));
+			Log.d("height", String.valueOf(size.y));
+			Measuredheight = size.y;
+		} else {
+			Display d = w.getDefaultDisplay();
+			Measuredheight = d.getHeight();
+		}
+
+		int height = originBitmap.getHeight();
+		int width = originBitmap.getWidth();
+
+		Bitmap resized = null;
+		while (height > Measuredheight/3*2) {
+			resized = Bitmap.createScaledBitmap(originBitmap,
+					(width * (Measuredheight/3*2)) / height, Measuredheight/3*2, true);
+			height = resized.getHeight();
+			width = resized.getWidth();
+		}
+
+		return resized;
+	}
 	/********************************************** 댓글 *********************************************/
 
 }

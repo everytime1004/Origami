@@ -156,7 +156,7 @@ public class BoardIndexActivity extends SherlockActivity {
 
 					String author = jsonTask.getString("author");
 
-					tasksArray.add(new Post(jsonTask.getInt("id"), "", "", "",
+					tasksArray.add(new Post(jsonTask.getInt("id"), jsonTask.getString("title"), "", "",
 							author, jsonTask.getString("imageURL")));
 
 					if (i == length - 1) {

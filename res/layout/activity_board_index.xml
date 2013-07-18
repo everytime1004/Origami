@@ -13,15 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="9"
-        android:columnWidth="50dp"
         android:horizontalSpacing="1dp"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:numColumns="4"
+        android:numColumns="5"
         android:stretchMode="columnWidth"
         android:verticalSpacing="1dp"
-        ptr:ptrDrawable="@drawable/ic_launcher"
-         />
+        ptr:ptrDrawable="@drawable/ic_launcher" />
 
     <Button
         android:id="@+id/moreTaskBtn"
