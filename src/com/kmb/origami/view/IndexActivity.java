@@ -10,6 +10,7 @@ import android.view.View.OnDragListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import com.kmb.origami.R;
@@ -21,7 +22,9 @@ public class IndexActivity extends Activity implements ViewFactory {
 	private ImageView rightCloud = null;
 	private ImageSwitcher mSwitcher = null;
 	private int imageFlag = 0;
-	
+
+	private long backKeyPressedTime = 0;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,23 +53,23 @@ public class IndexActivity extends Activity implements ViewFactory {
 					startActivity(changeViewIntent);
 					break;
 				case 1:
-//					changeViewIntent = new Intent(getApplicationContext(),
-//							CollectionActivity.class);
+					// changeViewIntent = new Intent(getApplicationContext(),
+					// CollectionActivity.class);
 					changeViewIntent = new Intent(getApplicationContext(),
 							CollectionActivity.class);
 					startActivity(changeViewIntent);
 					break;
 				case 2:
-//					changeViewIntent = new Intent(getApplicationContext(),
-//							CollectionActivity.class);
-//					startActivity(changeViewIntent);
+					// changeViewIntent = new Intent(getApplicationContext(),
+					// CollectionActivity.class);
+					// startActivity(changeViewIntent);
 					break;
 				}
 			}
 		});
-		
+
 		mSwitcher.setOnDragListener(new OnDragListener() {
-			
+
 			@Override
 			public boolean onDrag(View v, DragEvent event) {
 				// TODO Auto-generated method stub
@@ -131,6 +134,23 @@ public class IndexActivity extends Activity implements ViewFactory {
 		i.setBackgroundColor(getResources().getColor(
 				android.R.color.transparent));
 		return i;
+	}
+
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		Log.d("onBackPressed", "onBackPressed");
+
+		if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
+			backKeyPressedTime = System.currentTimeMillis();
+			Toast.makeText(this, "'뒤로'버튼 한 번 더 누르시면 종료 됩니다.", Toast.LENGTH_LONG)
+					.show();
+
+		}
+		if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
+			this.finish();
+		}
+
 	}
 
 	private Integer[] mImageIds = { R.drawable.index_start_button,
