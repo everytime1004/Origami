@@ -77,7 +77,7 @@ public class CollectionActivity extends Activity {
 
 		// 마지막 + 버튼 추가
 		BitmapDrawable drawable = (BitmapDrawable) getResources().getDrawable(
-				R.drawable.icon);
+				R.drawable.plus_button_gray);
 		Bitmap lastImageAddButtonBitmap = drawable.getBitmap();
 		collectionPersonalImageArray.add(new CollectionImage(numOfImage + 1,
 				lastImageAddButtonBitmap, numOfImage));

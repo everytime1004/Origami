@@ -34,7 +34,7 @@ import com.kmb.origami.lib.ProgressWheel;
 @SuppressWarnings("deprecation")
 public class PlayActivity extends Activity implements OnItemSelectedListener,
 		ViewFactory, OnItemClickListener {
-	
+
 	private int currentStage;
 	private int currentItem;
 
@@ -76,7 +76,7 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_play);
-		
+
 		currentItem = getIntent().getIntExtra("currentItem", 1);
 		currentStage = getIntent().getIntExtra("currentStage", 1);
 
@@ -115,12 +115,12 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		spinHandler.removeMessages(0);
 		pw_three.stopSpinning();
 	}
-	
+
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
 	}
 
 	@Override
@@ -170,9 +170,9 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 		} else if (id == R.id.play_left_button) {
 			if (mCurrentPosition == 0) {
 				play_left_button.setClickable(false);
-				if(play_right_button.getTag().toString().equals("last")){
+				if (play_right_button.getTag().toString().equals("last")) {
 					play_left_button.setClickable(true);
-					mCurrentPosition = play_gallery.getCount()-1;
+					mCurrentPosition = play_gallery.getCount() - 1;
 				}
 			}
 			play_gallery.performItemClick(v, mCurrentPosition - 1,
@@ -337,7 +337,7 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 			i.setImageResource(mThumbIds[position]);
 			i.setAdjustViewBounds(true);
 
-			i.setLayoutParams(new Gallery.LayoutParams((int)TypedValue
+			i.setLayoutParams(new Gallery.LayoutParams((int) TypedValue
 					.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60,
 							getResources().getDisplayMetrics()),
 					LayoutParams.MATCH_PARENT));
@@ -348,12 +348,16 @@ public class PlayActivity extends Activity implements OnItemSelectedListener,
 
 	}
 
-	private Integer[] mThumbIds = { R.drawable.index_start_button,
-			R.drawable.index_collection_button, R.drawable.btn_howto,
-			R.drawable.cloud_middle };
+	private Integer[] mThumbIds = { R.drawable.contents_1_1,
+			R.drawable.contents_1_2, R.drawable.contents_1_3,
+			R.drawable.contents_1_4, R.drawable.contents_1_5,
+			R.drawable.contents_1_6, R.drawable.contents_1_7,
+			R.drawable.contents_1_8, R.drawable.contents_1_9 };
 
-	private Integer[] mImageIds = { R.drawable.index_start_button,
-			R.drawable.index_collection_button, R.drawable.btn_howto,
-			R.drawable.cloud_middle };
+	private Integer[] mImageIds = { R.drawable.contents_1_1,
+			R.drawable.contents_1_2, R.drawable.contents_1_3,
+			R.drawable.contents_1_4, R.drawable.contents_1_5,
+			R.drawable.contents_1_6, R.drawable.contents_1_7,
+			R.drawable.contents_1_8, R.drawable.contents_1_9 };
 
 }

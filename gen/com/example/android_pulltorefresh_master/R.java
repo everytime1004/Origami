@@ -42,12 +42,12 @@ public final class R {
 		public static final int indicator_right_padding = 0x7f06001d;
 	}
 	public static final class drawable {
-		public static final int default_ptr_flip = 0x7f0200ab;
-		public static final int default_ptr_rotate = 0x7f0200ac;
-		public static final int ic_launcher = 0x7f0200ae;
-		public static final int indicator_arrow = 0x7f0200b4;
-		public static final int indicator_bg_bottom = 0x7f0200b5;
-		public static final int indicator_bg_top = 0x7f0200b6;
+		public static final int default_ptr_flip = 0x7f0200b4;
+		public static final int default_ptr_rotate = 0x7f0200b5;
+		public static final int ic_launcher = 0x7f0200b7;
+		public static final int indicator_arrow = 0x7f0200bd;
+		public static final int indicator_bg_bottom = 0x7f0200be;
+		public static final int indicator_bg_top = 0x7f0200bf;
 	}
 	public static final class id {
 		public static final int both = 0x7f090013;

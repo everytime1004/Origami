@@ -35,14 +35,14 @@ public final class R {
 		public static final int button_close_normal = 0x7f02009b;
 		public static final int button_close_pressed = 0x7f02009c;
 		public static final int close_button_background = 0x7f0200a0;
-		public static final int custom_view_background = 0x7f0200a9;
-		public static final int custom_view_strikethrough = 0x7f0200aa;
-		public static final int ic_launcher = 0x7f0200ae;
-		public static final int rating_bar_full = 0x7f0200bf;
-		public static final int rating_empty = 0x7f0200c0;
-		public static final int rating_full = 0x7f0200c1;
-		public static final int splash_background_tile = 0x7f0200c6;
-		public static final int tiled_background = 0x7f0200ce;
+		public static final int custom_view_background = 0x7f0200b2;
+		public static final int custom_view_strikethrough = 0x7f0200b3;
+		public static final int ic_launcher = 0x7f0200b7;
+		public static final int rating_bar_full = 0x7f0200c9;
+		public static final int rating_empty = 0x7f0200ca;
+		public static final int rating_full = 0x7f0200cb;
+		public static final int splash_background_tile = 0x7f0200d0;
+		public static final int tiled_background = 0x7f0200d8;
 	}
 	public static final class id {
 		public static final int activity_splash_title = 0x7f090087;
